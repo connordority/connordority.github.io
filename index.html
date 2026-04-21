@@ -1,23 +1,114 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Connor Dority</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #1f2937;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+      color: white;
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.8rem;
+    }
+
+    header h2 {
+      margin-top: 10px;
+      font-weight: normal;
+      font-size: 1.2rem;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 30px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+    }
+
+    .button {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 12px 20px;
+      background: #1e3a8a;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .button:hover {
+      background: #172554;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
+
 <body>
 
-<h1>Connor Dority</h1>
-<h2>BIOL 3100 Data Analytics Personal Website</h2>
+<header>
+  <h1>Connor Dority</h1>
+  <h2>BIOL 3100 Data Analytics</h2>
+</header>
 
-<p>Welcome to my Personal Website! Below are links to class specifics.</p>
+<div class="container">
 
-<h3>Final Project</h3>
-<ul>
-  <li>
-    <a href="https://connordority.github.io/Data_Course_DORITY/">
-      Alaska Drug Overdose Analysis 2015-2025
+  <div class="card">
+    <h2>About This Site</h2>
+    <p>
+      This website showcases my work from BIOL 3100 Data Analytics, including my final project
+      analyzing public health trends using statistical modeling and data visualization.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Final Project</h2>
+    <p><strong>Alaska Drug Overdose Analysis (2015–2025)</strong></p>
+    <p>
+      This project examines overdose trends in Alaska over time, identifying patterns and
+      potential public health implications using real-world data.
+    </p>
+
+    <a class="button" href="https://connordority.github.io/Data_Course_DORITY/">
+      View Final Project →
     </a>
-  </li>
-</ul>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 Connor Dority
+</footer>
 
 </body>
 </html>
