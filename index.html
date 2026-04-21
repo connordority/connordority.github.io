@@ -1,764 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Connor Dority | BIOL 3100</title>
+  <meta charset="UTF-8">
+  <title>Connor Dority</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
-    :root {
-      --bg: #0b1020;
-      --bg-soft: #121936;
-      --card: rgba(255, 255, 255, 0.08);
-      --card-border: rgba(255, 255, 255, 0.14);
-      --text: #f4f7fb;
-      --muted: #b9c2d0;
-      --accent: #5ea2ff;
-      --accent-2: #7c4dff;
-      --glow: rgba(94, 162, 255, 0.35);
-      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-    }
-
-    body.light {
-      --bg: #eef3fb;
-      --bg-soft: #dbe7fb;
-      --card: rgba(255, 255, 255, 0.82);
-      --card-border: rgba(21, 44, 99, 0.08);
-      --text: #172033;
-      --muted: #5e6a80;
-      --accent: #245dff;
-      --accent-2: #6a31ff;
-      --glow: rgba(36, 93, 255, 0.18);
-      --shadow: 0 18px 45px rgba(40, 70, 130, 0.14);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
     body {
       margin: 0;
-      font-family: Inter, Arial, Helvetica, sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(124, 77, 255, 0.18), transparent 28%),
-        radial-gradient(circle at top right, rgba(94, 162, 255, 0.18), transparent 30%),
-        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
-      color: var(--text);
-      transition: background 0.35s ease, color 0.35s ease;
-      overflow-x: hidden;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #1f2937;
     }
 
-    .orb {
-      position: fixed;
-      border-radius: 999px;
-      filter: blur(70px);
-      z-index: 0;
-      pointer-events: none;
-      opacity: 0.5;
-    }
-
-    .orb.one {
-      width: 280px;
-      height: 280px;
-      background: rgba(94, 162, 255, 0.22);
-      top: 80px;
-      left: -60px;
-      animation: drift 12s ease-in-out infinite;
-    }
-
-    .orb.two {
-      width: 300px;
-      height: 300px;
-      background: rgba(124, 77, 255, 0.18);
-      bottom: 80px;
-      right: -80px;
-      animation: drift 14s ease-in-out infinite reverse;
-    }
-
-    @keyframes drift {
-      0%, 100% { transform: translateY(0px) translateX(0px); }
-      50% { transform: translateY(22px) translateX(18px); }
-    }
-
-    .site {
-      position: relative;
-      z-index: 1;
-    }
-
-    .nav {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      backdrop-filter: blur(14px);
-      background: rgba(9, 14, 30, 0.45);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    body.light .nav {
-      background: rgba(255,255,255,0.62);
-      border-bottom: 1px solid rgba(20, 34, 70, 0.08);
-    }
-
-    .nav-inner {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 14px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .brand {
-      font-weight: 800;
-      letter-spacing: 0.3px;
-      font-size: 1rem;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .nav-links a,
-    .theme-btn {
-      color: var(--text);
-      text-decoration: none;
-      font-size: 0.95rem;
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      transition: 0.25s ease;
-    }
-
-    .nav-links a:hover,
-    .theme-btn:hover {
-      background: rgba(255,255,255,0.08);
-      border-color: rgba(255,255,255,0.12);
-      transform: translateY(-1px);
-    }
-
-    body.light .nav-links a:hover,
-    body.light .theme-btn:hover {
-      background: rgba(25, 45, 94, 0.06);
-      border-color: rgba(25, 45, 94, 0.08);
-    }
-
-    .theme-btn {
-      background: transparent;
-      cursor: pointer;
-      font-weight: 700;
-    }
-
-    .hero {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 92px 20px 56px;
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 28px;
-      align-items: center;
-    }
-
-    .hero-card,
-    .panel,
-    .project-card,
-    .stat-card {
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
-      border-radius: 26px;
-    }
-
-    .hero-card {
-      padding: 38px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-card::after {
-      content: "";
-      position: absolute;
-      inset: auto -60px -60px auto;
-      width: 180px;
-      height: 180px;
-      background: radial-gradient(circle, var(--glow), transparent 70%);
-      border-radius: 999px;
-    }
-
-    .eyebrow {
-      display: inline-block;
-      font-size: 0.86rem;
-      font-weight: 800;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: #dbe7ff;
-      background: linear-gradient(90deg, rgba(94,162,255,0.2), rgba(124,77,255,0.2));
-      border: 1px solid rgba(255,255,255,0.12);
-      padding: 10px 14px;
-      border-radius: 999px;
-      margin-bottom: 18px;
-    }
-
-    body.light .eyebrow {
-      color: #1d3a8f;
-      border-color: rgba(36,93,255,0.14);
-    }
-
-    h1 {
-      font-size: clamp(2.4rem, 5vw, 4.8rem);
-      line-height: 0.98;
-      margin: 0 0 16px;
-      letter-spacing: -1.8px;
-    }
-
-    .gradient-text {
-      background: linear-gradient(90deg, #6db6ff, #9b7cff 45%, #c8dcff 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    body.light .gradient-text {
-      background: linear-gradient(90deg, #245dff, #7c4dff 55%, #0e204f 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .hero p {
-      color: var(--muted);
-      font-size: 1.08rem;
-      line-height: 1.75;
-      max-width: 60ch;
-      margin: 0 0 26px;
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      margin-top: 8px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 14px 20px;
-      border-radius: 14px;
-      text-decoration: none;
-      font-weight: 800;
-      transition: 0.25s ease;
-      border: 1px solid transparent;
-    }
-
-    .btn-primary {
+    header {
+      background: linear-gradient(135deg, #1e3a8a, #3b82f6);
       color: white;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      box-shadow: 0 12px 30px var(--glow);
+      text-align: center;
+      padding: 60px 20px;
     }
 
-    .btn-secondary {
-      color: var(--text);
-      background: rgba(255,255,255,0.06);
-      border-color: rgba(255,255,255,0.12);
-    }
-
-    body.light .btn-secondary {
-      background: rgba(36, 93, 255, 0.06);
-      border-color: rgba(36, 93, 255, 0.12);
-    }
-
-    .btn:hover {
-      transform: translateY(-2px) scale(1.01);
-    }
-
-    .panel {
-      padding: 24px;
-      display: grid;
-      gap: 16px;
-    }
-
-    .panel h3 {
+    header h1 {
       margin: 0;
+      font-size: 2.8rem;
+    }
+
+    header h2 {
+      margin-top: 10px;
+      font-weight: normal;
       font-size: 1.2rem;
     }
 
-    .mini-grid {
-      display: grid;
-      gap: 14px;
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
     }
 
-    .mini-card {
-      border-radius: 18px;
-      padding: 18px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    body.light .mini-card {
-      background: rgba(255,255,255,0.55);
-      border-color: rgba(36,93,255,0.08);
-    }
-
-    .mini-card .label {
-      font-size: 0.82rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
-      font-weight: 800;
-    }
-
-    .mini-card .value {
-      font-size: 1rem;
-      font-weight: 700;
-      line-height: 1.5;
-    }
-
-    .section {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 18px 20px 32px;
-    }
-
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      align-items: end;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-
-    .section-head h2 {
-      margin: 0;
-      font-size: clamp(1.6rem, 3vw, 2.3rem);
-      letter-spacing: -0.7px;
-    }
-
-    .section-head p {
-      margin: 0;
-      color: var(--muted);
-      max-width: 54ch;
-      line-height: 1.7;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-    }
-
-    .stat-card {
-      padding: 24px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stat-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.07), transparent 50%);
-      pointer-events: none;
-    }
-
-    .stat-number {
-      font-size: 2rem;
-      font-weight: 900;
-      margin-bottom: 10px;
-    }
-
-    .stat-label {
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .stat-text {
-      color: var(--muted);
-      line-height: 1.65;
-      font-size: 0.98rem;
-    }
-
-    .projects {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 18px;
-    }
-
-    .project-card {
+    .card {
+      background: white;
+      border-radius: 14px;
       padding: 30px;
-      position: relative;
-      overflow: hidden;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
     }
 
-    .project-card::after {
-      content: "";
-      position: absolute;
-      width: 240px;
-      height: 240px;
-      border-radius: 999px;
-      top: -80px;
-      right: -80px;
-      background: radial-gradient(circle, rgba(124,77,255,0.14), transparent 70%);
-      pointer-events: none;
+    .card:hover {
+      transform: translateY(-4px);
     }
 
-    .project-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-
-    .tag {
+    .button {
       display: inline-block;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      font-weight: 800;
-      background: rgba(94,162,255,0.12);
-      border: 1px solid rgba(94,162,255,0.18);
-      color: #cfe2ff;
+      margin-top: 15px;
+      padding: 12px 20px;
+      background: #1e3a8a;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
     }
 
-    body.light .tag {
-      color: #1e49b5;
+    .button:hover {
+      background: #172554;
     }
 
-    .project-card h3 {
-      margin: 0 0 12px;
-      font-size: 1.55rem;
-    }
-
-    .project-card p {
-      color: var(--muted);
-      line-height: 1.75;
-      margin: 0 0 18px;
-      max-width: 75ch;
-    }
-
-    .bullet-list {
-      margin: 0 0 20px;
-      padding-left: 18px;
-      color: var(--muted);
-      line-height: 1.8;
-    }
-
-    .bullet-list li {
-      margin-bottom: 6px;
-    }
-
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 18px;
-    }
-
-    .about-card {
-      padding: 28px;
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      box-shadow: var(--shadow);
-      border-radius: 22px;
-      backdrop-filter: blur(14px);
-    }
-
-    .about-card h3 {
-      margin-top: 0;
-      font-size: 1.25rem;
-    }
-
-    .about-card p,
-    .about-card li {
-      color: var(--muted);
-      line-height: 1.75;
-    }
-
-    .about-card ul {
-      margin: 0;
-      padding-left: 18px;
-    }
-
-    .footer {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 20px 20px 46px;
-      color: var(--muted);
-      font-size: 0.95rem;
+    footer {
       text-align: center;
-    }
-
-    .fade-in {
-      opacity: 0;
-      transform: translateY(24px);
-      animation: fadeUp 0.8s ease forwards;
-    }
-
-    .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.22s; }
-    .delay-3 { animation-delay: 0.34s; }
-    .delay-4 { animation-delay: 0.46s; }
-
-    @keyframes fadeUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @media (max-width: 900px) {
-      .hero,
-      .about-grid,
-      .stats {
-        grid-template-columns: 1fr;
-      }
-
-      .hero {
-        padding-top: 64px;
-      }
-
-      .hero-card,
-      .panel,
-      .project-card,
-      .about-card,
-      .stat-card {
-        border-radius: 22px;
-      }
-
-      h1 {
-        letter-spacing: -1px;
-      }
-    }
-
-    @media (max-width: 560px) {
-      .nav-inner,
-      .hero,
-      .section,
-      .footer {
-        padding-left: 16px;
-        padding-right: 16px;
-      }
-
-      .hero-card,
-      .panel,
-      .project-card,
-      .about-card,
-      .stat-card {
-        padding: 22px;
-      }
-
-      .nav-links {
-        gap: 8px;
-      }
-
-      .nav-links a,
-      .theme-btn {
-        padding: 8px 11px;
-        font-size: 0.88rem;
-      }
+      padding: 20px;
+      color: #6b7280;
+      font-size: 0.9rem;
     }
   </style>
 </head>
+
 <body>
-  <div class="orb one"></div>
-  <div class="orb two"></div>
 
-  <div class="site">
-    <nav class="nav">
-      <div class="nav-inner">
-        <div class="brand">Connor Dority</div>
-        <div class="nav-links">
-          <a href="#project">Project</a>
-          <a href="#about">About</a>
-          <a href="https://connordority.github.io/Data_Course_DORITY/" target="_blank" rel="noopener noreferrer">Open Report</a>
-          <button class="theme-btn" id="themeToggle" type="button">Toggle Theme</button>
-        </div>
-      </div>
-    </nav>
+<header>
+  <h1>Connor Dority</h1>
+  <h2>BIOL 3100 Data Analytics</h2>
+</header>
 
-    <header class="hero">
-      <div class="hero-card fade-in">
-        <div class="eyebrow">BIOL 3100 • Data Analytics</div>
-        <h1>
-          Building a <span class="gradient-text">data story</span><br>
-          from Alaska overdose trends.
-        </h1>
-        <p>
-          Welcome to my BIOL 3100 personal website. This page highlights my final project,
-          methods, and key takeaways from analyzing overdose patterns in Alaska from 2015 to 2025
-          using data cleaning, visualization, and statistical interpretation.
-        </p>
+<div class="container">
 
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="https://connordority.github.io/Data_Course_DORITY/" target="_blank" rel="noopener noreferrer">
-            View Final Project
-          </a>
-          <a class="btn btn-secondary" href="https://github.com/connordority/Data_Course_DORITY" target="_blank" rel="noopener noreferrer">
-            View GitHub Repo
-          </a>
-        </div>
-      </div>
-
-      <aside class="panel fade-in delay-1">
-        <h3>Quick Snapshot</h3>
-        <div class="mini-grid">
-          <div class="mini-card">
-            <div class="label">Project Title</div>
-            <div class="value">Alaska Drug Overdose Analysis (2015–2025)</div>
-          </div>
-          <div class="mini-card">
-            <div class="label">Course Focus</div>
-            <div class="value">Data cleaning, visualization, and applied statistical modeling</div>
-          </div>
-          <div class="mini-card">
-            <div class="label">Main Tools</div>
-            <div class="value">R, tidyverse, ggplot2, ANOVA, generalized linear modeling</div>
-          </div>
-        </div>
-      </aside>
-    </header>
-
-    <section class="section" id="highlights">
-      <div class="section-head fade-in delay-1">
-        <h2>Project Highlights</h2>
-        <p>
-          A strong data project does more than show graphs. It explains the question, the methods,
-          and the meaning behind the results.
-        </p>
-      </div>
-
-      <div class="stats">
-        <div class="stat-card fade-in delay-1">
-          <div class="stat-number">2015–2025</div>
-          <div class="stat-label">Study Window</div>
-          <div class="stat-text">
-            Focused on longitudinal overdose trends in Alaska across a ten-year period.
-          </div>
-        </div>
-
-        <div class="stat-card fade-in delay-2">
-          <div class="stat-number">R + HTML</div>
-          <div class="stat-label">Built for the Web</div>
-          <div class="stat-text">
-            Rendered as a hosted GitHub Pages site rather than just a raw project folder.
-          </div>
-        </div>
-
-        <div class="stat-card fade-in delay-3">
-          <div class="stat-number">Public Health</div>
-          <div class="stat-label">Real-World Relevance</div>
-          <div class="stat-text">
-            Uses data analysis to explore an issue with direct health and policy significance.
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="project">
-      <div class="section-head fade-in">
-        <h2>Featured Project</h2>
-        <p>
-          This project examines patterns in overdose data over time and presents the results in a way
-          that is accessible, interpretable, and visually clear.
-        </p>
-      </div>
-
-      <div class="projects">
-        <article class="project-card fade-in delay-1">
-          <div class="project-top">
-            <span class="tag">Final Project</span>
-            <span class="tag">Hosted with GitHub Pages</span>
-          </div>
-
-          <h3>Alaska Drug Overdose Analysis (2015–2025)</h3>
-          <p>
-            My final project explores overdose trends in Alaska using cleaned datasets and data visualization.
-            The goal was to identify meaningful patterns over time and communicate the results clearly through
-            a polished web-based report.
-          </p>
-
-          <ul class="bullet-list">
-            <li>Cleaned and organized data using tidyverse workflows</li>
-            <li>Created visualizations to show patterns and changes over time</li>
-            <li>Applied statistical reasoning to interpret relationships in the data</li>
-            <li>Presented the work as a fully hosted website instead of a raw file submission</li>
-          </ul>
-
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="https://connordority.github.io/Data_Course_DORITY/" target="_blank" rel="noopener noreferrer">
-              Launch Final Project
-            </a>
-            <a class="btn btn-secondary" href="#about">
-              Learn More
-            </a>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section class="section" id="about">
-      <div class="section-head fade-in">
-        <h2>About This Site</h2>
-        <p>
-          This site serves as my BIOL 3100 personal landing page and connects directly to my course project work.
-        </p>
-      </div>
-
-      <div class="about-grid">
-        <div class="about-card fade-in delay-1">
-          <h3>What this website does</h3>
-          <p>
-            Instead of only turning in Markdown or code files, this page provides a polished entry point to my
-            final project. It is designed to look professional, feel modern, and make the project easy to access.
-          </p>
-          <p>
-            The goal was to create something that feels more like a true portfolio page than a basic class submission.
-          </p>
-        </div>
-
-        <div class="about-card fade-in delay-2">
-          <h3>Methods and skills used</h3>
-          <ul>
-            <li>Data cleaning and wrangling in R</li>
-            <li>Visualization with ggplot2</li>
-            <li>Interpretation of public health trend data</li>
-            <li>Static website deployment with GitHub Pages</li>
-            <li>Basic HTML, CSS, and layout design</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <footer class="footer">
-      © 2026 Connor Dority • BIOL 3100 Data Analytics Personal Website
-    </footer>
+  <div class="card">
+    <h2>About This Site</h2>
+    <p>
+      This website showcases my work from BIOL 3100 Data Analytics, including my final project
+      analyzing public health trends using statistical modeling and data visualization.
+    </p>
   </div>
 
-  <script>
-    const body = document.body;
-    const toggleBtn = document.getElementById("themeToggle");
-    const savedTheme = localStorage.getItem("theme");
+  <div class="card">
+    <h2>Final Project</h2>
+    <p><strong>Alaska Drug Overdose Analysis (2015–2025)</strong></p>
+    <p>
+      This project examines overdose trends in Alaska over time, identifying patterns and
+      potential public health implications using real-world data.
+    </p>
 
-    if (savedTheme === "light") {
-      body.classList.add("light");
-    }
+    <a class="button" href="https://connordority.github.io/Data_Course_DORITY/">
+      View Final Project →
+    </a>
+  </div>
 
-    toggleBtn.addEventListener("click", () => {
-      body.classList.toggle("light");
-      const theme = body.classList.contains("light") ? "light" : "dark";
-      localStorage.setItem("theme", theme);
-    });
-  </script>
+</div>
+
+<footer>
+  © 2026 Connor Dority
+</footer>
+
 </body>
 </html>
