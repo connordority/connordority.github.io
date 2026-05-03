@@ -3,765 +3,1486 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Connor Dority | BIOL 3100</title>
+  <title>University of Utah EMS Dispatch Dashboard</title>
   <style>
     :root {
-      --bg: #0b1020;
-      --bg-soft: #121936;
-      --card: rgba(255, 255, 255, 0.08);
-      --card-border: rgba(255, 255, 255, 0.14);
-      --text: #f4f7fb;
-      --muted: #b9c2d0;
-      --accent: #5ea2ff;
-      --accent-2: #7c4dff;
-      --glow: rgba(94, 162, 255, 0.35);
-      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      --utah-red: #990000;
+      --utah-red-light: #cc0000;
+      --utah-black: #111111;
+      --utah-white: #ffffff;
+      --bg: #f5f5f5;
+      --muted: #555555;
+      --line: #d7d7d7;
+      --card-shadow: 0 2px 10px rgba(0,0,0,0.14);
     }
 
-    body.light {
-      --bg: #eef3fb;
-      --bg-soft: #dbe7fb;
-      --card: rgba(255, 255, 255, 0.82);
-      --card-border: rgba(21, 44, 99, 0.08);
-      --text: #172033;
-      --muted: #5e6a80;
-      --accent: #245dff;
-      --accent-2: #6a31ff;
-      --glow: rgba(36, 93, 255, 0.18);
-      --shadow: 0 18px 45px rgba(40, 70, 130, 0.14);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: Inter, Arial, Helvetica, sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(124, 77, 255, 0.18), transparent 28%),
-        radial-gradient(circle at top right, rgba(94, 162, 255, 0.18), transparent 30%),
-        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
-      color: var(--text);
-      transition: background 0.35s ease, color 0.35s ease;
-      overflow-x: hidden;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--utah-black);
     }
 
-    .orb {
-      position: fixed;
-      border-radius: 999px;
-      filter: blur(70px);
-      z-index: 0;
-      pointer-events: none;
-      opacity: 0.5;
-    }
-
-    .orb.one {
-      width: 280px;
-      height: 280px;
-      background: rgba(94, 162, 255, 0.22);
-      top: 80px;
-      left: -60px;
-      animation: drift 12s ease-in-out infinite;
-    }
-
-    .orb.two {
-      width: 300px;
-      height: 300px;
-      background: rgba(124, 77, 255, 0.18);
-      bottom: 80px;
-      right: -80px;
-      animation: drift 14s ease-in-out infinite reverse;
-    }
-
-    @keyframes drift {
-      0%, 100% { transform: translateY(0px) translateX(0px); }
-      50% { transform: translateY(22px) translateX(18px); }
-    }
-
-    .site {
-      position: relative;
-      z-index: 1;
-    }
-
-    .nav {
+    header {
       position: sticky;
       top: 0;
-      z-index: 20;
-      backdrop-filter: blur(14px);
-      background: rgba(9, 14, 30, 0.45);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      z-index: 100;
+      background: linear-gradient(135deg, var(--utah-red), var(--utah-red-light));
+      color: white;
+      padding: 7px 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
     }
 
-    body.light .nav {
-      background: rgba(255,255,255,0.62);
-      border-bottom: 1px solid rgba(20, 34, 70, 0.08);
-    }
-
-    .nav-inner {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 14px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .brand {
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      line-height: 1.1;
       font-weight: 800;
-      letter-spacing: 0.3px;
-      font-size: 1rem;
+      letter-spacing: .3px;
     }
 
-    .nav-links {
+    .sub {
+      font-size: .72rem;
+      margin-top: 2px;
+      opacity: .95;
+    }
+
+    nav {
       display: flex;
-      align-items: center;
-      gap: 14px;
       flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 6px;
     }
 
-    .nav-links a,
-    .theme-btn {
-      color: var(--text);
-      text-decoration: none;
-      font-size: 0.95rem;
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      transition: 0.25s ease;
-    }
-
-    .nav-links a:hover,
-    .theme-btn:hover {
-      background: rgba(255,255,255,0.08);
-      border-color: rgba(255,255,255,0.12);
-      transform: translateY(-1px);
-    }
-
-    body.light .nav-links a:hover,
-    body.light .theme-btn:hover {
-      background: rgba(25, 45, 94, 0.06);
-      border-color: rgba(25, 45, 94, 0.08);
-    }
-
-    .theme-btn {
-      background: transparent;
+    nav button, .btn {
+      background: var(--utah-red);
+      color: white;
+      border: none;
+      border-radius: 7px;
+      padding: 5px 9px;
+      font-size: .76rem;
       cursor: pointer;
       font-weight: 700;
     }
 
-    .hero {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 92px 20px 56px;
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 28px;
-      align-items: center;
-    }
+    nav button:hover, .btn:hover { background: var(--utah-red-light); }
 
-    .hero-card,
-    .panel,
-    .project-card,
-    .stat-card {
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
-      border-radius: 26px;
-    }
-
-    .hero-card {
-      padding: 38px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-card::after {
-      content: "";
-      position: absolute;
-      inset: auto -60px -60px auto;
-      width: 180px;
-      height: 180px;
-      background: radial-gradient(circle, var(--glow), transparent 70%);
-      border-radius: 999px;
-    }
-
-    .eyebrow {
-      display: inline-block;
-      font-size: 0.86rem;
-      font-weight: 800;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: #dbe7ff;
-      background: linear-gradient(90deg, rgba(94,162,255,0.2), rgba(124,77,255,0.2));
-      border: 1px solid rgba(255,255,255,0.12);
-      padding: 10px 14px;
-      border-radius: 999px;
-      margin-bottom: 18px;
-    }
-
-    body.light .eyebrow {
-      color: #1d3a8f;
-      border-color: rgba(36,93,255,0.14);
-    }
-
-    h1 {
-      font-size: clamp(2.4rem, 5vw, 4.8rem);
-      line-height: 0.98;
-      margin: 0 0 16px;
-      letter-spacing: -1.8px;
-    }
-
-    .gradient-text {
-      background: linear-gradient(90deg, #6db6ff, #9b7cff 45%, #c8dcff 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    body.light .gradient-text {
-      background: linear-gradient(90deg, #245dff, #7c4dff 55%, #0e204f 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .hero p {
-      color: var(--muted);
-      font-size: 1.08rem;
-      line-height: 1.75;
-      max-width: 60ch;
-      margin: 0 0 26px;
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      margin-top: 8px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 14px 20px;
-      border-radius: 14px;
-      text-decoration: none;
-      font-weight: 800;
-      transition: 0.25s ease;
-      border: 1px solid transparent;
-    }
-
-    .btn-primary {
+    nav button.active {
+      background: var(--utah-black);
       color: white;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      box-shadow: 0 12px 30px var(--glow);
     }
 
-    .btn-secondary {
-      color: var(--text);
-      background: rgba(255,255,255,0.06);
-      border-color: rgba(255,255,255,0.12);
-    }
-
-    body.light .btn-secondary {
-      background: rgba(36, 93, 255, 0.06);
-      border-color: rgba(36, 93, 255, 0.12);
-    }
-
-    .btn:hover {
-      transform: translateY(-2px) scale(1.01);
-    }
-
-    .panel {
-      padding: 24px;
-      display: grid;
-      gap: 16px;
-    }
-
-    .panel h3 {
-      margin: 0;
-      font-size: 1.2rem;
-    }
-
-    .mini-grid {
-      display: grid;
-      gap: 14px;
-    }
-
-    .mini-card {
-      border-radius: 18px;
+    main {
+      max-width: 1500px;
+      margin: auto;
       padding: 18px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
     }
 
-    body.light .mini-card {
-      background: rgba(255,255,255,0.55);
-      border-color: rgba(36,93,255,0.08);
+    .tab.hidden { display: none; }
+
+    .card {
+      background: white;
+      border: 2px solid var(--utah-red);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 16px;
     }
 
-    .mini-card .label {
-      font-size: 0.82rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
-      font-weight: 800;
+    h2, h3 { margin-top: 0; }
+
+    .notice {
+      background: #fff3cd;
+      color: #111;
+      border: 2px solid var(--utah-red);
+      border-radius: 10px;
+      padding: 12px;
+      font-weight: 600;
     }
 
-    .mini-card .value {
-      font-size: 1rem;
-      font-weight: 700;
-      line-height: 1.5;
-    }
-
-    .section {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 18px 20px 32px;
-    }
-
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      align-items: end;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-
-    .section-head h2 {
-      margin: 0;
-      font-size: clamp(1.6rem, 3vw, 2.3rem);
-      letter-spacing: -0.7px;
-    }
-
-    .section-head p {
-      margin: 0;
-      color: var(--muted);
-      max-width: 54ch;
-      line-height: 1.7;
-    }
-
-    .stats {
+    .kpis {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
     }
 
-    .stat-card {
-      padding: 24px;
-      position: relative;
-      overflow: hidden;
+    .kpi {
+      background: white;
+      border: 2px solid var(--utah-red);
+      border-radius: 14px;
+      padding: 12px;
+      box-shadow: var(--card-shadow);
     }
 
-    .stat-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.07), transparent 50%);
-      pointer-events: none;
-    }
-
-    .stat-number {
+    .kpi .num {
       font-size: 2rem;
       font-weight: 900;
-      margin-bottom: 10px;
+      color: var(--utah-red);
     }
 
-    .stat-label {
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .stat-text {
+    .kpi .label {
+      font-size: .8rem;
       color: var(--muted);
-      line-height: 1.65;
-      font-size: 0.98rem;
+      font-weight: 700;
     }
 
-    .projects {
+    .dispatch-panel-row {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1.4fr) minmax(320px, .8fr);
       gap: 18px;
+      align-items: start;
     }
 
-    .project-card {
-      padding: 30px;
-      position: relative;
-      overflow: hidden;
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(160px, 1fr));
+      gap: 12px;
+      align-items: end;
     }
 
-    .project-card::after {
-      content: "";
-      position: absolute;
-      width: 240px;
-      height: 240px;
-      border-radius: 999px;
-      top: -80px;
-      right: -80px;
-      background: radial-gradient(circle, rgba(124,77,255,0.14), transparent 70%);
-      pointer-events: none;
+    .form-grid .wide { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: .8rem;
+      color: #333;
+      font-weight: 800;
     }
 
-    .project-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
+    input, select, textarea {
+      width: 100%;
+      background: white;
+      color: #111;
+      border: 1px solid #aaa;
+      border-radius: 10px;
+      padding: 9px;
+      font-size: .95rem;
     }
 
-    .tag {
+    #team {
+      height: 74px;
+      min-height: 74px;
+      overflow-y: auto;
+    }
+
+    small {
+      display: block;
+      margin-top: 4px;
+      color: #555;
+      font-size: .72rem;
+    }
+
+    #pagingTemplate {
+      min-height: 230px;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.45;
+    }
+
+    .transport-update-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .transport-update-grid .wide { grid-column: 1 / -1; }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .86rem;
+      min-width: 1100px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 9px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--utah-black);
+      color: white;
+      position: sticky;
+      top: 78px;
+      z-index: 2;
+      white-space: nowrap;
+    }
+
+    .status, .transport-badge {
       display: inline-block;
-      padding: 8px 12px;
       border-radius: 999px;
-      font-size: 0.82rem;
+      padding: 4px 8px;
+      font-size: .75rem;
       font-weight: 800;
-      background: rgba(94,162,255,0.12);
-      border: 1px solid rgba(94,162,255,0.18);
-      color: #cfe2ff;
+      color: white;
+      background: var(--utah-red);
+      white-space: nowrap;
     }
 
-    body.light .tag {
-      color: #1e49b5;
+    .status.Clear { background: #167a32; }
+    .status.Transport { background: #5b21b6; }
+    .status.Onscene { background: #b45309; }
+    .status.Enroute { background: #854d0e; }
+
+    .row-actions {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      min-width: 260px;
     }
 
-    .project-card h3 {
-      margin: 0 0 12px;
-      font-size: 1.55rem;
+    .btn.small {
+      padding: 5px 7px;
+      font-size: .72rem;
+      border-radius: 6px;
     }
 
-    .project-card p {
-      color: var(--muted);
-      line-height: 1.75;
-      margin: 0 0 18px;
-      max-width: 75ch;
-    }
+    .btn.danger { background: #333; }
+    .btn.danger:hover { background: #000; }
 
-    .bullet-list {
-      margin: 0 0 20px;
-      padding-left: 18px;
-      color: var(--muted);
-      line-height: 1.8;
-    }
-
-    .bullet-list li {
-      margin-bottom: 6px;
-    }
-
-    .about-grid {
+    .grid-two {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 18px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
     }
 
-    .about-card {
-      padding: 28px;
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      box-shadow: var(--shadow);
-      border-radius: 22px;
-      backdrop-filter: blur(14px);
+    .grid-three {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
     }
 
-    .about-card h3 {
-      margin-top: 0;
-      font-size: 1.25rem;
+    .announcement-list li { margin-bottom: 7px; }
+
+    .backup-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
     }
 
-    .about-card p,
-    .about-card li {
-      color: var(--muted);
-      line-height: 1.75;
-    }
-
-    .about-card ul {
-      margin: 0;
-      padding-left: 18px;
-    }
-
-    .footer {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 20px 20px 46px;
-      color: var(--muted);
-      font-size: 0.95rem;
-      text-align: center;
-    }
-
-    .fade-in {
-      opacity: 0;
-      transform: translateY(24px);
-      animation: fadeUp 0.8s ease forwards;
-    }
-
-    .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.22s; }
-    .delay-3 { animation-delay: 0.34s; }
-    .delay-4 { animation-delay: 0.46s; }
-
-    @keyframes fadeUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @media (max-width: 900px) {
-      .hero,
-      .about-grid,
-      .stats {
+    @media (max-width: 950px) {
+      .dispatch-panel-row, .grid-two, .grid-three, .kpis, .form-grid, .transport-update-grid {
         grid-template-columns: 1fr;
       }
 
-      .hero {
-        padding-top: 64px;
-      }
-
-      .hero-card,
-      .panel,
-      .project-card,
-      .about-card,
-      .stat-card {
-        border-radius: 22px;
-      }
-
-      h1 {
-        letter-spacing: -1px;
-      }
+      header h1 { font-size: 1.35rem; }
+      th { position: static; }
     }
 
-    @media (max-width: 560px) {
-      .nav-inner,
-      .hero,
-      .section,
-      .footer {
-        padding-left: 16px;
-        padding-right: 16px;
-      }
-
-      .hero-card,
-      .panel,
-      .project-card,
-      .about-card,
-      .stat-card {
-        padding: 22px;
-      }
-
-      .nav-links {
-        gap: 8px;
-      }
-
-      .nav-links a,
-      .theme-btn {
-        padding: 8px 11px;
-        font-size: 0.88rem;
-      }
+    @media print {
+      header, nav, .no-print, .btn { display: none !important; }
+      body { background: white; color: black; }
+      .card, .kpi { box-shadow: none; border: 1px solid #999; }
+      table { min-width: 0; font-size: .75rem; }
+      th { background: #eee; color: #000; }
     }
   </style>
-</head>
-<body>
-  <div class="orb one"></div>
-  <div class="orb two"></div>
 
-  <div class="site">
-    <nav class="nav">
-      <div class="nav-inner">
-        <div class="brand">Connor Dority</div>
-        <div class="nav-links">
-          <a href="#project">Project</a>
-          <a href="#about">About</a>
-          <a href="https://connordority.github.io/Data_Course_DORITY/" target="_blank" rel="noopener noreferrer">Open Report</a>
-          <button class="theme-btn" id="themeToggle" type="button">Toggle Theme</button>
-        </div>
-      </div>
-    </nav>
+<style>
+  body.night-mode {
+    --bg: #0f0f10;
+    --utah-white: #151518;
+    --line: #333;
+    background: #0f0f10;
+    color: #f5f5f5;
+  }
 
-    <header class="hero">
-      <div class="hero-card fade-in">
-        <div class="eyebrow">BIOL 3100 • Data Analytics</div>
-        <h1>
-          Building a <span class="gradient-text">data story</span><br>
-          from Alaska overdose trends.
-        </h1>
-        <p>
-          Welcome to my BIOL 3100 personal website. This page highlights my final project,
-          methods, and key takeaways from analyzing overdose patterns in Alaska from 2015 to 2025
-          using data cleaning, visualization, and statistical interpretation.
-        </p>
+  body.night-mode .card,
+  body.night-mode .kpi {
+    background: #18181b;
+    color: #f5f5f5;
+    border-color: #cc0000;
+  }
 
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="https://connordority.github.io/Data_Course_DORITY/" target="_blank" rel="noopener noreferrer">
-            View Final Project
-          </a>
-          <a class="btn btn-secondary" href="https://github.com/connordority/Data_Course_DORITY" target="_blank" rel="noopener noreferrer">
-            View GitHub Repo
-          </a>
-        </div>
-      </div>
+  body.night-mode input,
+  body.night-mode select,
+  body.night-mode textarea {
+    background: #101012;
+    color: #f5f5f5;
+    border-color: #555;
+  }
 
-      <aside class="panel fade-in delay-1">
-        <h3>Quick Snapshot</h3>
-        <div class="mini-grid">
-          <div class="mini-card">
-            <div class="label">Project Title</div>
-            <div class="value">Alaska Drug Overdose Analysis (2015–2025)</div>
-          </div>
-          <div class="mini-card">
-            <div class="label">Course Focus</div>
-            <div class="value">Data cleaning, visualization, and applied statistical modeling</div>
-          </div>
-          <div class="mini-card">
-            <div class="label">Main Tools</div>
-            <div class="value">R, tidyverse, ggplot2, ANOVA, generalized linear modeling</div>
-          </div>
-        </div>
-      </aside>
-    </header>
+  body.night-mode label,
+  body.night-mode small,
+  body.night-mode .kpi .label {
+    color: #d6d6d6;
+  }
 
-    <section class="section" id="highlights">
-      <div class="section-head fade-in delay-1">
-        <h2>Project Highlights</h2>
-        <p>
-          A strong data project does more than show graphs. It explains the question, the methods,
-          and the meaning behind the results.
-        </p>
-      </div>
+  body.night-mode .notice {
+    background: #2a2110;
+    color: #fff3cd;
+  }
 
-      <div class="stats">
-        <div class="stat-card fade-in delay-1">
-          <div class="stat-number">2015–2025</div>
-          <div class="stat-label">Study Window</div>
-          <div class="stat-text">
-            Focused on longitudinal overdose trends in Alaska across a ten-year period.
-          </div>
-        </div>
+  .toolbar {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.4fr) minmax(160px, .7fr) minmax(160px, .7fr) auto auto;
+    gap: 10px;
+    align-items: end;
+  }
 
-        <div class="stat-card fade-in delay-2">
-          <div class="stat-number">R + HTML</div>
-          <div class="stat-label">Built for the Web</div>
-          <div class="stat-text">
-            Rendered as a hosted GitHub Pages site rather than just a raw project folder.
-          </div>
-        </div>
+  .clock-timer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
 
-        <div class="stat-card fade-in delay-3">
-          <div class="stat-number">Public Health</div>
-          <div class="stat-label">Real-World Relevance</div>
-          <div class="stat-text">
-            Uses data analysis to explore an issue with direct health and policy significance.
-          </div>
-        </div>
-      </div>
-    </section>
+  .clock-box {
+    background: white;
+    border: 2px solid var(--utah-red);
+    border-radius: 14px;
+    padding: 12px;
+    box-shadow: var(--card-shadow);
+  }
 
-    <section class="section" id="project">
-      <div class="section-head fade-in">
-        <h2>Featured Project</h2>
-        <p>
-          This project examines patterns in overdose data over time and presents the results in a way
-          that is accessible, interpretable, and visually clear.
-        </p>
-      </div>
+  body.night-mode .clock-box {
+    background: #18181b;
+  }
 
-      <div class="projects">
-        <article class="project-card fade-in delay-1">
-          <div class="project-top">
-            <span class="tag">Final Project</span>
-            <span class="tag">Hosted with GitHub Pages</span>
-          </div>
+  .clock-value {
+    font-size: 1.7rem;
+    font-weight: 900;
+    color: var(--utah-red);
+  }
 
-          <h3>Alaska Drug Overdose Analysis (2015–2025)</h3>
-          <p>
-            My final project explores overdose trends in Alaska using cleaned datasets and data visualization.
-            The goal was to identify meaningful patterns over time and communicate the results clearly through
-            a polished web-based report.
-          </p>
+  .priority {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 4px 8px;
+    font-size: .75rem;
+    font-weight: 900;
+    color: white;
+    white-space: nowrap;
+  }
 
-          <ul class="bullet-list">
-            <li>Cleaned and organized data using tidyverse workflows</li>
-            <li>Created visualizations to show patterns and changes over time</li>
-            <li>Applied statistical reasoning to interpret relationships in the data</li>
-            <li>Presented the work as a fully hosted website instead of a raw file submission</li>
-          </ul>
+  .priority.Low { background: #167a32; }
+  .priority.Moderate { background: #b45309; }
+  .priority.High { background: #cc0000; }
+  .priority.Critical { background: #111111; border: 2px solid #cc0000; }
 
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="https://connordority.github.io/Data_Course_DORITY/" target="_blank" rel="noopener noreferrer">
-              Launch Final Project
-            </a>
-            <a class="btn btn-secondary" href="#about">
-              Learn More
-            </a>
-          </div>
-        </article>
-      </div>
-    </section>
+  body.night-mode .priority.Critical {
+    background: #cc0000;
+    border-color: #fff;
+  }
 
-    <section class="section" id="about">
-      <div class="section-head fade-in">
-        <h2>About This Site</h2>
-        <p>
-          This site serves as my BIOL 3100 personal landing page and connects directly to my course project work.
-        </p>
-      </div>
+  .staffing-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(160px, 1fr));
+    gap: 12px;
+  }
 
-      <div class="about-grid">
-        <div class="about-card fade-in delay-1">
-          <h3>What this website does</h3>
-          <p>
-            Instead of only turning in Markdown or code files, this page provides a polished entry point to my
-            final project. It is designed to look professional, feel modern, and make the project easy to access.
-          </p>
-          <p>
-            The goal was to create something that feels more like a true portfolio page than a basic class submission.
-          </p>
-        </div>
+  .staff-card {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+    background: #fafafa;
+  }
 
-        <div class="about-card fade-in delay-2">
-          <h3>Methods and skills used</h3>
-          <ul>
-            <li>Data cleaning and wrangling in R</li>
-            <li>Visualization with ggplot2</li>
-            <li>Interpretation of public health trend data</li>
-            <li>Static website deployment with GitHub Pages</li>
-            <li>Basic HTML, CSS, and layout design</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+  body.night-mode .staff-card {
+    background: #101012;
+  }
 
-    <footer>
-  © 2026 
-  <a href="https://www.linkedin.com/in/connor-d-02b572214" target="_blank" style="color:#1e3a8a; text-decoration:none; font-weight:bold;">
-    Connor Dority
-  </a>
-</footer>
-  </div>
+  .staff-role {
+    font-size: .78rem;
+    font-weight: 900;
+    color: var(--utah-red);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
 
-  <script>
-    const body = document.body;
-    const toggleBtn = document.getElementById("themeToggle");
-    const savedTheme = localStorage.getItem("theme");
-
-    if (savedTheme === "light") {
-      body.classList.add("light");
+  @media (max-width: 1050px) {
+    .toolbar,
+    .clock-timer-grid,
+    .staffing-grid {
+      grid-template-columns: 1fr;
     }
+  }
+</style>
 
-    toggleBtn.addEventListener("click", () => {
-      body.classList.toggle("light");
-      const theme = body.classList.contains("light") ? "light" : "dark";
-      localStorage.setItem("theme", theme);
-    });
-  </script>
+
+<style>
+input[type="time"] {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+}
+</style>
+
+</head>
+
+<body>
+<header>
+  <h1>University of Utah EMS Dispatch Dashboard</h1>
+  <div class="sub">Operational dashboard for medic teams, dispatches, paging, transport updates, and event medicine tracking.</div>
+  <nav>
+    <button class="active" onclick="showTab('dispatch', this)">Dispatch</button>
+    <button onclick="showTab('teams', this)">Team Assignments</button>
+    <button onclick="showTab('staffing', this)">Shift Staffing</button>
+    <button onclick="showTab('announcements', this)">Announcements</button>
+    <button onclick="showTab('inventory', this)">Inventory</button>
+    <button onclick="showTab('backup', this)">Backup / Export</button>
+  </nav>
+</header>
+
+<main>
+  <section id="dispatch" class="tab">
+    <div class="notice no-print">
+      <strong>Privacy note:</strong> Do not enter patient names, DOBs, MRNs, phone numbers, addresses, or protected health information.
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="num" id="kpiActive">0</div><div class="label">Active Calls</div></div>
+      <div class="kpi"><div class="num" id="kpiClear">0</div><div class="label">Cleared Calls</div></div>
+      <div class="kpi"><div class="num" id="kpiTransport">0</div><div class="label">Transport Status</div></div>
+      <div class="kpi"><div class="num" id="kpiTotal">0</div><div class="label">Total Calls</div></div>
+    </div>
+
+    <div class="clock-timer-grid no-print">
+      <div class="clock-box">
+        <div class="label">Live Clock (24h / Military)</div>
+        <div class="clock-value" id="liveClock">--:--:--</div>
+      </div>
+      <div class="clock-box">
+        <label>Event Start Time (24h)</label>
+        <input id="eventStartTime" type="time" onchange="saveEventStartTime()">
+        <small>Used for the live event timer.</small>
+      </div>
+      <div class="clock-box">
+        <div class="label">Event Timer</div>
+        <div class="clock-value" id="eventTimer">Not started</div>
+      </div>
+    </div>
+
+    <div class="dispatch-panel-row no-print">
+      <div class="card">
+        <h2>New Dispatch</h2>
+        <div class="form-grid">
+          <div>
+            <label>Venue</label>
+            <select id="venue">
+              <option>Delta Center</option>
+              <option>Maverick Center</option>
+              <option>Rice-Eccles Stadium</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Case Number</label>
+            <input id="caseNumber" placeholder="26-041201DC">
+          </div>
+
+          <div>
+            <label>Status</label>
+            <select id="status">
+              <option>Dispatched</option>
+              <option>Enroute</option>
+              <option>Onscene</option>
+              <option>Transport</option>
+              <option>Clear</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Team(s)</label>
+            <select id="team" multiple></select>
+            <small>Use Cmd/Ctrl-click to select multiple teams.</small>
+          </div>
+
+          <div>
+            <label>Dispatch Time (24h)</label>
+            <input id="dispatchTime" type="time">
+          </div>
+
+          <div>
+            <label>Priority</label>
+            <select id="priority">
+              <option>Low</option>
+              <option selected>Moderate</option>
+              <option>High</option>
+              <option>Critical</option>
+            </select>
+          </div>
+
+
+          <div>
+            <label>Location</label>
+            <input id="callLocation" placeholder="Section, portal, concourse, etc.">
+          </div>
+
+          <div class="wide">
+            <label>Description</label>
+            <textarea id="description" rows="2" placeholder="Brief non-PHI description"></textarea>
+          </div>
+
+          <div>
+            <button class="btn" onclick="addDispatch()">Add Call</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Smart Web Paging Template</h2>
+        <textarea id="pagingTemplate">CASE:
+VENUE:
+TEAM(S):
+LOCATION:
+NOTES:</textarea>
+        <button class="btn" style="margin-top:10px;" onclick="copyPagingMessage()">Copy Paging Message</button>
+      </div>
+    </div>
+
+    <div class="card no-print">
+      <h2>Hospital Transport Update</h2>
+      <p>Use this to add hospital transport details to an existing dispatch call without creating a new call.</p>
+
+      <div class="transport-update-grid">
+        <div>
+          <label>Existing Case</label>
+          <select id="transportCase"></select>
+        </div>
+
+        <div>
+          <label>Transported?</label>
+          <select id="transported">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Hospital Destination</label>
+          <input id="hospitalDestination" placeholder="University Hospital, IMC, Primary Children's, etc.">
+        </div>
+
+        <div>
+          <label>Transport Unit / Agency</label>
+          <input id="transportAgency" placeholder="Gold Cross, SLC Fire, Stadium unit, etc.">
+        </div>
+
+        <div>
+          <label>Transport Time (24h)</label>
+          <input id="transportTime" type="time">
+        </div>
+
+        <div class="wide">
+          <label>Transport Notes</label>
+          <textarea id="transportNotes" rows="2" placeholder="Brief non-PHI transport note"></textarea>
+        </div>
+
+        <div>
+          <button class="btn" onclick="updateTransport()">Update Existing Call</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Dispatch Log</h2>
+
+      <div class="toolbar no-print">
+        <div>
+          <label>Search Calls</label>
+          <input id="callSearch" placeholder="Search case, venue, team, location, description, hospital..." oninput="renderDispatch()">
+        </div>
+        <div>
+          <label>Filter Status</label>
+          <select id="statusFilter" onchange="renderDispatch()">
+            <option value="">All Statuses</option>
+            <option>Dispatched</option>
+            <option>Enroute</option>
+            <option>Onscene</option>
+            <option>Transport</option>
+            <option>Clear</option>
+          </select>
+        </div>
+        <div>
+          <label>Filter Priority</label>
+          <select id="priorityFilter" onchange="renderDispatch()">
+            <option value="">All Priorities</option>
+            <option>Low</option>
+            <option>Moderate</option>
+            <option>High</option>
+            <option>Critical</option>
+          </select>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn" onclick="toggleActiveOnly()" id="activeOnlyBtn">Active Calls Only: Off</button>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn" onclick="exportDispatchCSV()">Export CSV</button>
+          <button class="btn" onclick="exportDispatchPDF()">Export PDF</button>
+        </div>
+      </div>
+      <br>
+      <div class="table-wrap">
+        <table id="dispatchTable"></table>
+      </div>
+    </div>
+  </section>
+
+  <section id="teams" class="tab hidden">
+    <div class="grid-two">
+      <div class="card no-print">
+        <h2>Team Assignments</h2>
+        <div class="form-grid">
+          <div>
+            <label>Venue</label>
+            <select id="teamVenue">
+              <option>Delta Center</option>
+              <option>Maverick Center</option>
+              <option>Rice-Eccles Stadium</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div><label>Team</label><input id="teamName" placeholder="Team 1"></div>
+          <div><label>EMT / Medic 1</label><input id="emt1" placeholder="Name"></div>
+          <div><label>EMT / Medic 2</label><input id="emt2" placeholder="Name"></div>
+          <div class="wide"><label>Orientee / Role</label><input id="orientee" placeholder="Orientee, Rover, Player Response, etc."></div>
+          <div><button class="btn" onclick="addTeam()">Add / Update Team</button></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Current Teams</h2>
+        <div class="table-wrap">
+          <table id="teamTable"></table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Rotation Models</h2>
+      <div id="rotations"></div>
+    </div>
+
+    <div class="card">
+      <h2>Call Signs</h2>
+      <div class="table-wrap">
+        <table id="callSigns"></table>
+      </div>
+    </div>
+  </section>
+
+
+  <section id="staffing" class="tab hidden">
+    <div class="card no-print">
+      <h2>Shift Staffing Board</h2>
+      <div class="form-grid">
+        <div><label>Name</label><input id="staffName" placeholder="Medic / EMT name"></div>
+        <div>
+          <label>Role</label>
+          <select id="staffRole">
+            <option>EMS Supervisor</option>
+            <option>Dispatch</option>
+            <option>Team Member</option>
+            <option>Rover</option>
+            <option>Player Response</option>
+            <option>First Aid</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div><label>Assignment</label><input id="staffAssignment" placeholder="Team 1, Rover 2, First Aid, etc."></div>
+        <div><label>Start (24h)</label><input id="staffStart" type="time"></div>
+        <div><label>End (24h)</label><input id="staffEnd" type="time"></div>
+        <div><label>Radio / Call Sign</label><input id="staffRadio" placeholder="EMS, Medical, Team 1"></div>
+        <div class="wide"><label>Notes</label><input id="staffNotes" placeholder="Optional non-PHI note"></div>
+        <div><button class="btn" onclick="addStaff()">Add Staff</button></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Current Shift Staffing</h2>
+      <div id="staffingBoard" class="staffing-grid"></div>
+    </div>
+  </section>
+
+  <section id="announcements" class="tab hidden">
+    <div id="announcementCards" class="grid-two"></div>
+  </section>
+
+  <section id="inventory" class="tab hidden">
+    <div class="card no-print">
+      <h2>Supply / Inventory Tracker</h2>
+      <div class="form-grid">
+        <div><label>Item</label><input id="itemName" placeholder="Gloves, gauze, AED pads, etc."></div>
+        <div><label>Quantity / Status</label><input id="itemQty" placeholder="2 boxes, low, stocked"></div>
+        <div><button class="btn" onclick="addInventory()">Add / Update Item</button></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Inventory</h2>
+      <div class="table-wrap">
+        <table id="inventoryTable"></table>
+      </div>
+    </div>
+  </section>
+
+  <section id="backup" class="tab hidden">
+    <div class="card">
+      <h2>Backup / Export</h2>
+      <p>This dashboard saves data in this browser using localStorage. Export backups regularly if you use this operationally.</p>
+      <div class="backup-actions no-print">
+        <button class="btn" onclick="exportData()">Export Backup JSON</button>
+        <label class="btn" style="display:inline-block; color:white;">Import Backup JSON
+          <input type="file" accept=".json" onchange="importData(event)" style="display:none;">
+        </label>
+        <button class="btn danger" onclick="clearAllData()">Clear All Dashboard Data</button>
+        <button class="btn" onclick="window.print()">Print Current View</button>
+        <button class="btn" onclick="toggleNightMode()" id="nightModeBtn">Night Ops Mode</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const defaultData = {
+  dispatches: [],
+  teams: [
+    {venue:'Delta Center', team:'Team 1', emt1:'', emt2:'', orientee:''},
+    {venue:'Delta Center', team:'Team 2', emt1:'', emt2:'', orientee:''},
+    {venue:'Maverick Center', team:'Team 1', emt1:'', emt2:'', orientee:''}
+  ],
+  inventory: [
+    {item:'Trauma Bag', qty:'Ready'},
+    {item:'AED', qty:'Ready'},
+    {item:'Oxygen', qty:'Check level'}
+  ],
+  staffing: [],
+  settings: { activeOnly: false, nightMode: false, eventStartTime: '' }
+};
+
+const rotationModels = {
+  'Delta 1700 Call Time': [
+    ['1700', 'Staff arrival', 'Bag checks', 'Briefing prep', 'Supervisor tasks'],
+    ['1715', 'Training', 'Assignments', 'Radio checks', 'Dispatch setup'],
+    ['1800', 'Rotation 1 starts', 'Teams posted', 'Rovers active', 'Supervisor clear']
+  ],
+  'Maverick / Grizzlies 1730 Call Time': [
+    ['1630', 'Supervisor arrival', 'Venue coordination', 'Command check', 'Prep'],
+    ['1730', 'Staff arrival', 'Bag checks', 'Briefing', 'Radio check'],
+    ['1800', 'Rotation 1 starts', 'Teams posted', 'Rovers active', 'Supervisor clear']
+  ],
+  'Concert / Event Model': [
+    ['Pre-event', 'Supervisor meeting', 'Staff arrival', 'Equipment check', 'Venue briefing'],
+    ['Doors', 'Teams posted', 'Dispatch monitoring', 'Rovers active', 'First aid ready'],
+    ['Post-event', 'Egress coverage', 'Final calls', 'Equipment return', 'Clear']
+  ]
+};
+
+const announcements = {
+  'Delta Dispatch Announcements': [
+    'Supervisor arrival and dispatch setup.',
+    'Staff arrival and bag/equipment checks.',
+    'Staff briefing before posting.',
+    'Post teams according to current rotation model.',
+    'Clear only after Delta Dispatch confirms event coverage is complete.'
+  ],
+  'Maverick Center Announcements': [
+    'Supervisor meeting before staff posting.',
+    'Staff briefing at assigned call time.',
+    'Use venue radio/call sign plan.',
+    'Post teams by rotation model.',
+    'Clear at end of game or event per Maverick Center direction.'
+  ],
+  'General Reminders': [
+    'Avoid documenting PHI in this dashboard.',
+    'Use case numbers instead of patient identifiers.',
+    'Keep radio traffic clear, brief, and professional.',
+    'Update transport details only after transport is confirmed.'
+  ]
+};
+
+const callSignsData = [
+  ['Department', 'Channel', 'Call Sign'],
+  ['UHealth EMS Radio', 'T3', 'EMS'],
+  ['Venue Command Center', '7 MAV / Venue Channel', 'VCC'],
+  ['EMS Supervisor to Venue', 'Venue Channel', 'MEDICAL'],
+  ['Fire / Outside Agency', 'Venue Channel', 'FIRE']
+];
+
+let data = JSON.parse(localStorage.getItem('emsDispatchData') || 'null') || defaultData;
+data.dispatches = data.dispatches || [];
+data.teams = data.teams || [];
+data.inventory = data.inventory || [];
+data.staffing = data.staffing || [];
+data.settings = data.settings || { activeOnly: false, nightMode: false, eventStartTime: '' };
+if (data.settings.activeOnly === undefined) data.settings.activeOnly = false;
+if (data.settings.nightMode === undefined) data.settings.nightMode = false;
+if (data.settings.eventStartTime === undefined) data.settings.eventStartTime = '';
+
+function save() {
+  localStorage.setItem('emsDispatchData', JSON.stringify(data));
+  renderAll();
+}
+
+function showTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+
+  document.querySelectorAll('nav button').forEach(button => button.classList.remove('active'));
+  btn.classList.add('active');
+
+  renderAll();
+}
+
+function nowTime() {
+  return new Date().toTimeString().slice(0,5);
+}
+
+function fillTeams() {
+  const teamSelect = document.getElementById('team');
+  const current = Array.from(teamSelect.selectedOptions).map(o => o.value);
+  const teamNames = [
+    ...new Set([
+      ...data.teams.map(t => t.team).filter(Boolean),
+      'Team 1','Team 2','Team 3','Team 4','Team 5','Team 6','Team 7','Team 8','Team 9',
+      'Rover 1','Rover 2','Player Response','Medic 1'
+    ])
+  ];
+
+  teamSelect.innerHTML = teamNames.map(team => {
+    const selected = current.includes(team) ? 'selected' : '';
+    return `<option value="${escapeHtml(team)}" ${selected}>${escapeHtml(team)}</option>`;
+  }).join('');
+
+  const dispatchTime = document.getElementById('dispatchTime');
+  if (dispatchTime && !dispatchTime.value) dispatchTime.value = nowTime();
+}
+
+function addDispatch() {
+  const selectedTeams = Array.from(document.getElementById('team').selectedOptions).map(o => o.value).join(', ');
+
+  const call = {
+    id: makeId(),
+    venue: document.getElementById('venue').value,
+    caseNumber: document.getElementById('caseNumber').value.trim(),
+    team: selectedTeams,
+    status: document.getElementById('status').value,
+    dispatchTime: document.getElementById('dispatchTime').value,
+    priority: document.getElementById('priority').value,
+    createdAt: new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', hour12:false}),
+    onScene: '',
+    txInitiated: '',
+    location: document.getElementById('callLocation').value.trim(),
+    description: document.getElementById('description').value.trim(),
+    transported: '',
+    hospitalDestination: '',
+    transportAgency: '',
+    transportTime: '',
+    transportNotes: ''
+  };
+
+  if (!call.caseNumber) {
+    call.caseNumber = `${new Date().getFullYear().toString().slice(2)}-${String(data.dispatches.length + 1).padStart(4,'0')}`;
+  }
+
+  data.dispatches.unshift(call);
+
+  ['caseNumber','callLocation','description'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('dispatchTime').value = nowTime();
+
+  save();
+}
+
+function setStatus(id, next) {
+  const call = data.dispatches.find(d => d.id === id);
+  if (!call) return;
+
+  call.status = next;
+  const time = nowTime();
+
+  if (next === 'Enroute' && !call.enroute) call.enroute = time;
+  if (next === 'Onscene' && !call.onScene) call.onScene = time;
+  if (next === 'Transport' && !call.txInitiated) call.txInitiated = time;
+  if (next === 'Clear' && !call.clearTime) call.clearTime = time;
+
+  save();
+}
+
+function delDispatch(id) {
+  if (!id) return;
+  if (!confirm('Delete this dispatch call?')) return;
+  data.dispatches = data.dispatches.filter(d => String(d.id) !== String(id));
+  save();
+}
+
+function renderDispatch() {
+  const active = data.dispatches.filter(d => d.status !== 'Clear').length;
+  const clear = data.dispatches.filter(d => d.status === 'Clear').length;
+  const transport = data.dispatches.filter(d => d.status === 'Transport' || d.transported === 'Yes').length;
+
+  document.getElementById('kpiActive').textContent = active;
+  document.getElementById('kpiClear').textContent = clear;
+  document.getElementById('kpiTransport').textContent = transport;
+  document.getElementById('kpiTotal').textContent = data.dispatches.length;
+
+  const search = (document.getElementById('callSearch')?.value || '').toLowerCase();
+  const statusFilter = document.getElementById('statusFilter')?.value || '';
+  const priorityFilter = document.getElementById('priorityFilter')?.value || '';
+
+  let calls = data.dispatches.map((d, originalIndex) => ({ ...d, originalIndex }));
+
+  if (data.settings.activeOnly) calls = calls.filter(d => d.status !== 'Clear');
+  if (statusFilter) calls = calls.filter(d => d.status === statusFilter);
+  if (priorityFilter) calls = calls.filter(d => (d.priority || 'Moderate') === priorityFilter);
+  if (search) {
+    calls = calls.filter(d => [
+      d.caseNumber, d.venue, d.team, d.status, d.priority, d.dispatchTime, d.location, d.description,
+      d.hospitalDestination, d.transportAgency, d.transportTime, d.transportNotes
+    ].join(' ').toLowerCase().includes(search));
+  }
+
+  const activeBtn = document.getElementById('activeOnlyBtn');
+  if (activeBtn) activeBtn.textContent = `Active Calls Only: ${data.settings.activeOnly ? 'On' : 'Off'}`;
+
+  const rows = calls.map(d => `
+    <tr>
+      <td>${escapeHtml(d.caseNumber || '')}</td>
+      <td>${escapeHtml(d.venue || '')}</td>
+      <td>${escapeHtml(d.team || '')}</td>
+      <td><span class="priority ${escapeHtml(d.priority || 'Moderate')}">${escapeHtml(d.priority || 'Moderate')}</span></td>
+      <td><span class="status ${escapeHtml(d.status || '')}">${escapeHtml(d.status || '')}</span></td>
+      <td>${escapeHtml(d.dispatchTime || '')}</td>
+      <td>${escapeHtml(d.enroute || '')}</td>
+      <td>${escapeHtml(d.onScene || '')}</td>
+      <td>${escapeHtml(d.txInitiated || '')}</td>
+      <td>${escapeHtml(d.clearTime || '')}</td>
+      <td>${escapeHtml(d.location || '')}</td>
+      <td>${escapeHtml(d.description || '')}</td>
+      <td>${d.transported ? `<span class="transport-badge">${escapeHtml(d.transported)}</span>` : ''}</td>
+      <td>${escapeHtml(d.hospitalDestination || '')}</td>
+      <td>${escapeHtml(d.transportAgency || '')}</td>
+      <td>${escapeHtml(d.transportTime || '')}</td>
+      <td>${escapeHtml(d.transportNotes || '')}</td>
+      <td class="no-print row-actions">
+        <button type="button" class="btn small" onclick="setStatusByIndex(${d.originalIndex}, 'Enroute')">Enroute</button>
+        <button type="button" class="btn small" onclick="setStatusByIndex(${d.originalIndex}, 'Onscene')">On Scene</button>
+        <button type="button" class="btn small" onclick="setStatusByIndex(${d.originalIndex}, 'Transport')">Transport</button>
+        <button type="button" class="btn small" onclick="setStatusByIndex(${d.originalIndex}, 'Clear')">Clear</button>
+        <button type="button" class="btn small danger dispatch-delete-button" data-delete-index="${d.originalIndex}">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+
+  document.getElementById('dispatchTable').innerHTML = `
+    <tr>
+      <th>Case</th>
+      <th>Venue</th>
+      <th>Team(s)</th>
+      <th>Priority</th>
+      <th>Status</th>
+      <th>Dispatch</th>
+      <th>Enroute</th>
+      <th>On Scene</th>
+      <th>Tx Init.</th>
+      <th>Clear</th>
+      <th>Location</th>
+      <th>Description</th>
+      <th>Transport</th>
+      <th>Hospital</th>
+      <th>Transport Unit / Agency</th>
+      <th>Transport Time</th>
+      <th>Transport Notes</th>
+      <th class="no-print">Actions</th>
+    </tr>
+    ${rows || '<tr><td colspan="18">No dispatch calls match the current filters.</td></tr>'}
+  `;
+}
+
+function setStatusByIndex(index, next) {
+  const call = data.dispatches[index];
+  if (!call) return;
+
+  call.status = next;
+  const time = nowTime();
+
+  if (next === 'Enroute' && !call.enroute) call.enroute = time;
+  if (next === 'Onscene' && !call.onScene) call.onScene = time;
+  if (next === 'Transport' && !call.txInitiated) call.txInitiated = time;
+  if (next === 'Clear' && !call.clearTime) call.clearTime = time;
+
+  save();
+}
+
+function deleteDispatchByIndex(index) {
+  if (index === undefined || index === null || index < 0 || index >= data.dispatches.length) {
+    alert('Could not delete this call. Try refreshing the page.');
+    return;
+  }
+
+  const call = data.dispatches[index];
+  const label = call.caseNumber ? `case ${call.caseNumber}` : 'this dispatch call';
+
+  if (!confirm(`Delete ${label}?`)) return;
+
+  data.dispatches.splice(index, 1);
+  save();
+}
+
+function populateTransportCases() {
+  const select = document.getElementById('transportCase');
+  if (!select) return;
+
+  if (!data.dispatches.length) {
+    select.innerHTML = '<option value="">No dispatch calls yet</option>';
+    return;
+  }
+
+  const currentValue = select.value;
+
+  select.innerHTML = data.dispatches.map(d => {
+    const label = `${d.caseNumber || 'No Case #'} | ${d.venue || ''} | ${d.team || ''}`;
+    return `<option value="${d.id}">${escapeHtml(label)}</option>`;
+  }).join('');
+
+  if (data.dispatches.some(d => d.id === currentValue)) {
+    select.value = currentValue;
+  }
+}
+
+function updateTransport() {
+  const caseId = document.getElementById('transportCase').value;
+  const call = data.dispatches.find(d => d.id === caseId);
+
+  if (!call) {
+    alert('Please select an existing call first.');
+    return;
+  }
+
+  call.transported = document.getElementById('transported').value;
+  call.hospitalDestination = document.getElementById('hospitalDestination').value.trim();
+  call.transportAgency = document.getElementById('transportAgency').value.trim();
+  call.transportTime = document.getElementById('transportTime').value;
+  call.transportNotes = document.getElementById('transportNotes').value.trim();
+
+  ['hospitalDestination','transportAgency','transportTime','transportNotes'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+
+  save();
+}
+
+function copyPagingMessage() {
+  const text = document.getElementById('pagingTemplate').value;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Paging message copied.');
+  }).catch(() => {
+    alert('Copy failed. You can manually highlight and copy the template.');
+  });
+}
+
+function addTeam() {
+  const team = {
+    venue: document.getElementById('teamVenue').value,
+    team: document.getElementById('teamName').value.trim(),
+    emt1: document.getElementById('emt1').value.trim(),
+    emt2: document.getElementById('emt2').value.trim(),
+    orientee: document.getElementById('orientee').value.trim()
+  };
+
+  if (!team.team) {
+    alert('Enter a team name first.');
+    return;
+  }
+
+  const existingIndex = data.teams.findIndex(t => t.venue === team.venue && t.team.toLowerCase() === team.team.toLowerCase());
+
+  if (existingIndex >= 0) data.teams[existingIndex] = team;
+  else data.teams.push(team);
+
+  ['teamName','emt1','emt2','orientee'].forEach(id => document.getElementById(id).value = '');
+
+  save();
+}
+
+function renderTeams() {
+  document.getElementById('teamTable').innerHTML = `
+    <tr><th>Venue</th><th>Team</th><th>EMT / Medic 1</th><th>EMT / Medic 2</th><th>Orientee / Role</th></tr>
+    ${data.teams.map(t => `
+      <tr>
+        <td>${escapeHtml(t.venue || '')}</td>
+        <td>${escapeHtml(t.team || '')}</td>
+        <td>${escapeHtml(t.emt1 || '')}</td>
+        <td>${escapeHtml(t.emt2 || '')}</td>
+        <td>${escapeHtml(t.orientee || '')}</td>
+      </tr>
+    `).join('')}
+  `;
+
+  document.getElementById('rotations').innerHTML = Object.entries(rotationModels).map(([title, rows]) => `
+    <h3>${escapeHtml(title)}</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Time</th><th>Post 1</th><th>Post 2</th><th>Post 3</th><th>Post 4</th></tr>
+        ${rows.map(row => `<tr>${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}
+      </table>
+    </div>
+  `).join('');
+
+  document.getElementById('callSigns').innerHTML = callSignsData.map((row, i) => `
+    <tr>${row.map(cell => i === 0 ? `<th>${escapeHtml(cell)}</th>` : `<td>${escapeHtml(cell)}</td>`).join('')}</tr>
+  `).join('');
+}
+
+function renderAnnouncements() {
+  document.getElementById('announcementCards').innerHTML = Object.entries(announcements).map(([title, items]) => `
+    <div class="card">
+      <h2>${escapeHtml(title)}</h2>
+      <ul class="announcement-list">
+        ${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}
+      </ul>
+    </div>
+  `).join('');
+}
+
+function addInventory() {
+  const item = document.getElementById('itemName').value.trim();
+  const qty = document.getElementById('itemQty').value.trim();
+
+  if (!item) {
+    alert('Enter an item first.');
+    return;
+  }
+
+  const existing = data.inventory.find(i => i.item.toLowerCase() === item.toLowerCase());
+
+  if (existing) existing.qty = qty;
+  else data.inventory.push({item, qty});
+
+  document.getElementById('itemName').value = '';
+  document.getElementById('itemQty').value = '';
+
+  save();
+}
+
+function renderInventory() {
+  document.getElementById('inventoryTable').innerHTML = `
+    <tr><th>Item</th><th>Quantity / Status</th><th class="no-print">Action</th></tr>
+    ${data.inventory.map((item, idx) => `
+      <tr>
+        <td>${escapeHtml(item.item || '')}</td>
+        <td>${escapeHtml(item.qty || '')}</td>
+        <td class="no-print"><button class="btn small danger" onclick="deleteInventory(${idx})">Delete</button></td>
+      </tr>
+    `).join('') || '<tr><td colspan="3">No inventory items yet.</td></tr>'}
+  `;
+}
+
+function deleteInventory(index) {
+  data.inventory.splice(index, 1);
+  save();
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ems-dispatch-backup.json';
+  a.click();
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      data = JSON.parse(reader.result);
+      save();
+    } catch (error) {
+      alert('Could not import that file. Make sure it is a valid JSON backup.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function clearAllData() {
+  if (!confirm('This will clear all saved dashboard data in this browser. Continue?')) return;
+  localStorage.removeItem('emsDispatchData');
+  data = JSON.parse(JSON.stringify(defaultData));
+  save();
+}
+
+
+function toggleActiveOnly() {
+  data.settings.activeOnly = !data.settings.activeOnly;
+  save();
+}
+
+function toggleNightMode() {
+  data.settings.nightMode = !data.settings.nightMode;
+  applyNightMode();
+  save();
+}
+
+function applyNightMode() {
+  document.body.classList.toggle('night-mode', !!data.settings.nightMode);
+  const btn = document.getElementById('nightModeBtn');
+  if (btn) btn.textContent = data.settings.nightMode ? 'Day Mode' : 'Night Ops Mode';
+}
+
+function saveEventStartTime() {
+  data.settings.eventStartTime = document.getElementById('eventStartTime').value;
+  save();
+}
+
+function updateClockAndTimer() {
+  const now = new Date();
+  const clock = document.getElementById('liveClock');
+  if (clock) clock.textContent = now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+
+  const eventTimer = document.getElementById('eventTimer');
+  if (!eventTimer) return;
+
+  const startTime = data.settings.eventStartTime;
+  if (!startTime) {
+    eventTimer.textContent = 'Not started';
+    return;
+  }
+
+  const [h, m] = startTime.split(':').map(Number);
+  const start = new Date();
+  start.setHours(h, m, 0, 0);
+
+  let diff = Math.floor((now - start) / 1000);
+  const sign = diff < 0 ? '-' : '';
+  diff = Math.abs(diff);
+
+  const hours = Math.floor(diff / 3600);
+  const mins = Math.floor((diff % 3600) / 60);
+  const secs = diff % 60;
+
+  eventTimer.textContent = `${sign}${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+}
+
+function addStaff() {
+  const staff = {
+    id: makeId(),
+    name: document.getElementById('staffName').value.trim(),
+    role: document.getElementById('staffRole').value,
+    assignment: document.getElementById('staffAssignment').value.trim(),
+    start: document.getElementById('staffStart').value,
+    end: document.getElementById('staffEnd').value,
+    radio: document.getElementById('staffRadio').value.trim(),
+    notes: document.getElementById('staffNotes').value.trim()
+  };
+
+  if (!staff.name) {
+    alert('Enter a staff member name first.');
+    return;
+  }
+
+  data.staffing.push(staff);
+  ['staffName','staffAssignment','staffStart','staffEnd','staffRadio','staffNotes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+
+  save();
+}
+
+function deleteStaff(id) {
+  data.staffing = data.staffing.filter(s => s.id !== id);
+  save();
+}
+
+function renderStaffing() {
+  const board = document.getElementById('staffingBoard');
+  if (!board) return;
+
+  if (!data.staffing.length) {
+    board.innerHTML = '<p>No staff added yet.</p>';
+    return;
+  }
+
+  board.innerHTML = data.staffing.map(s => `
+    <div class="staff-card">
+      <div class="staff-role">${escapeHtml(s.role)}</div>
+      <h3>${escapeHtml(s.name)}</h3>
+      <p><strong>Assignment:</strong> ${escapeHtml(s.assignment || '')}</p>
+      <p><strong>Shift:</strong> ${escapeHtml(s.start || '')} ${s.end ? '– ' + escapeHtml(s.end) : ''}</p>
+      <p><strong>Radio:</strong> ${escapeHtml(s.radio || '')}</p>
+      <p>${escapeHtml(s.notes || '')}</p>
+      <button class="btn small danger no-print" onclick="deleteStaff('${s.id}')">Remove</button>
+    </div>
+  `).join('');
+}
+
+function getFilteredDispatchesForExport() {
+  const search = (document.getElementById('callSearch')?.value || '').toLowerCase();
+  const statusFilter = document.getElementById('statusFilter')?.value || '';
+  const priorityFilter = document.getElementById('priorityFilter')?.value || '';
+
+  let calls = [...data.dispatches];
+
+  if (data.settings.activeOnly) calls = calls.filter(d => d.status !== 'Clear');
+  if (statusFilter) calls = calls.filter(d => d.status === statusFilter);
+  if (priorityFilter) calls = calls.filter(d => (d.priority || 'Moderate') === priorityFilter);
+  if (search) {
+    calls = calls.filter(d => [
+      d.caseNumber, d.venue, d.team, d.status, d.priority, d.dispatchTime, d.location, d.description,
+      d.hospitalDestination, d.transportAgency, d.transportTime, d.transportNotes
+    ].join(' ').toLowerCase().includes(search));
+  }
+
+  return calls;
+}
+
+function exportDispatchCSV() {
+  const calls = getFilteredDispatchesForExport();
+  const headers = ['Case','Venue','Teams','Priority','Status','Dispatch','Enroute','On Scene','Tx Init','Clear','Location','Description','Transported','Hospital','Transport Agency','Transport Time','Transport Notes'];
+
+  const csvRows = [
+    headers.join(','),
+    ...calls.map(d => [
+      d.caseNumber, d.venue, d.team, d.priority, d.status, d.dispatchTime, d.enroute, d.onScene, d.txInitiated, d.clearTime,
+      d.location, d.description, d.transported, d.hospitalDestination, d.transportAgency, d.transportTime, d.transportNotes
+    ].map(csvEscape).join(','))
+  ];
+
+  const blob = new Blob([csvRows.join('\n')], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'dispatch-log.csv';
+  a.click();
+}
+
+function exportDispatchPDF() {
+  const calls = getFilteredDispatchesForExport();
+  const win = window.open('', '_blank');
+  const rows = calls.map(d => `
+    <tr>
+      <td>${escapeHtml(d.caseNumber || '')}</td>
+      <td>${escapeHtml(d.venue || '')}</td>
+      <td>${escapeHtml(d.team || '')}</td>
+      <td>${escapeHtml(d.priority || '')}</td>
+      <td>${escapeHtml(d.status || '')}</td>
+      <td>${escapeHtml(d.dispatchTime || '')}</td>
+      <td>${escapeHtml(d.enroute || '')}</td>
+      <td>${escapeHtml(d.onScene || '')}</td>
+      <td>${escapeHtml(d.txInitiated || '')}</td>
+      <td>${escapeHtml(d.clearTime || '')}</td>
+      <td>${escapeHtml(d.location || '')}</td>
+      <td>${escapeHtml(d.description || '')}</td>
+      <td>${escapeHtml(d.transported || '')}</td>
+      <td>${escapeHtml(d.hospitalDestination || '')}</td>
+      <td>${escapeHtml(d.transportAgency || '')}</td>
+      <td>${escapeHtml(d.transportTime || '')}</td>
+      <td>${escapeHtml(d.transportNotes || '')}</td>
+    </tr>
+  `).join('');
+
+  win.document.write(`
+    <html>
+      <head>
+        <title>Dispatch Log PDF</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; }
+          h1 { color: #990000; }
+          table { width: 100%; border-collapse: collapse; font-size: 10px; }
+          th, td { border: 1px solid #999; padding: 5px; text-align: left; vertical-align: top; }
+          th { background: #111; color: white; }
+        </style>
+      
+<style>
+input[type="time"] {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+}
+</style>
+
+</head>
+      <body>
+        <h1>University of Utah EMS Dispatch Log</h1>
+        <p>Generated: ${new Date().toLocaleString('en-GB', { hour12:false })}</p>
+        <table>
+          <tr>
+            <th>Case</th><th>Venue</th><th>Teams</th><th>Priority</th><th>Status</th><th>Dispatch</th><th>Enroute</th><th>On Scene</th><th>Tx Init</th><th>Clear</th><th>Location</th><th>Description</th><th>Transported</th><th>Hospital</th><th>Transport Agency</th><th>Transport Time</th><th>Transport Notes</th>
+          </tr>
+          ${rows || '<tr><td colspan="17">No calls to export.</td></tr>'}
+        </table>
+        <script>window.onload = () => { window.print(); }<\/script>
+      </body>
+    </html>
+  `);
+  win.document.close();
+}
+
+function csvEscape(value) {
+  const clean = String(value ?? '').replaceAll('"', '""');
+  return `"${clean}"`;
+}
+
+
+function renderAll() {
+  fillTeams();
+  applyNightMode();
+  const eventStart = document.getElementById('eventStartTime');
+  if (eventStart) eventStart.value = data.settings.eventStartTime || '';
+  renderDispatch();
+  renderTeams();
+  renderStaffing();
+  renderAnnouncements();
+  renderInventory();
+  populateTransportCases();
+  updateClockAndTimer();
+}
+
+function makeId() {
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+
+
+
+
+document.addEventListener('click', function(event) {
+  const deleteButton = event.target.closest('.dispatch-delete-button');
+  if (!deleteButton) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  const index = Number(deleteButton.dataset.deleteIndex);
+
+  if (!Number.isInteger(index) || index < 0 || index >= data.dispatches.length) {
+    alert('Could not delete this call. Refresh the page and try again.');
+    return;
+  }
+
+  const call = data.dispatches[index];
+  const label = call && call.caseNumber ? `case ${call.caseNumber}` : 'this dispatch call';
+
+  if (!confirm(`Delete ${label}?`)) return;
+
+  data.dispatches.splice(index, 1);
+  localStorage.setItem('emsDispatchData', JSON.stringify(data));
+  renderAll();
+});
+
+document.addEventListener('DOMContentLoaded', renderAll);
+setInterval(updateClockAndTimer, 1000);
+</script>
 </body>
 </html>
