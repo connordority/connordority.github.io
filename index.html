@@ -415,6 +415,36 @@ input[type="time"] {
 }
 </style>
 
+
+<style>
+#dispatchTable {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+#dispatchTable thead th {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 20 !important;
+  background: #111111 !important;
+  color: #ffffff !important;
+}
+
+#dispatchTable tbody td {
+  background: inherit;
+  position: relative;
+  z-index: 1;
+}
+</style>
+
+
+<style>
+#dispatchTime, #transportTime, #eventStartTime, #staffStart, #staffEnd {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+</style>
+
 </head>
 
 <body>
@@ -451,7 +481,7 @@ input[type="time"] {
       </div>
       <div class="clock-box">
         <label>Event Start Time (24h)</label>
-        <input id="eventStartTime" type="time" onchange="saveEventStartTime()">
+        <input id="eventStartTime" type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" oninput="formatMilitaryTimeInput(this)">
         <small>Used for the live event timer.</small>
       </div>
       <div class="clock-box">
@@ -498,7 +528,7 @@ input[type="time"] {
 
           <div>
             <label>Dispatch Time (24h)</label>
-            <input id="dispatchTime" type="time">
+            <input id="dispatchTime" type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" oninput="formatMilitaryTimeInput(this)">
           </div>
 
           <div>
@@ -569,7 +599,7 @@ NOTES:</textarea>
 
         <div>
           <label>Transport Time (24h)</label>
-          <input id="transportTime" type="time">
+          <input id="transportTime" type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" oninput="formatMilitaryTimeInput(this)">
         </div>
 
         <div class="wide">
@@ -691,8 +721,8 @@ NOTES:</textarea>
           </select>
         </div>
         <div><label>Assignment</label><input id="staffAssignment" placeholder="Team 1, Rover 2, First Aid, etc."></div>
-        <div><label>Start (24h)</label><input id="staffStart" type="time"></div>
-        <div><label>End (24h)</label><input id="staffEnd" type="time"></div>
+        <div><label>Start (24h)</label><input id="staffStart" type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" oninput="formatMilitaryTimeInput(this)"></div>
+        <div><label>End (24h)</label><input id="staffEnd" type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" oninput="formatMilitaryTimeInput(this)"></div>
         <div><label>Radio / Call Sign</label><input id="staffRadio" placeholder="EMS, Medical, Team 1"></div>
         <div class="wide"><label>Notes</label><input id="staffNotes" placeholder="Optional non-PHI note"></div>
         <div><button class="btn" onclick="addStaff()">Add Staff</button></div>
@@ -835,8 +865,37 @@ function showTab(id, btn) {
   renderAll();
 }
 
+
+function formatMilitaryTimeInput(input) {
+  let value = input.value.replace(/[^\d]/g, '').slice(0, 4);
+
+  if (value.length >= 3) {
+    value = value.slice(0, 2) + ':' + value.slice(2);
+  }
+
+  input.value = value;
+
+  if (value.length === 5) {
+    const [hh, mm] = value.split(':').map(Number);
+    if (hh > 23 || mm > 59) {
+      input.setCustomValidity('Use military time in HH:MM format, such as 0730 or 19:45.');
+    } else {
+      input.setCustomValidity('');
+    }
+  } else {
+    input.setCustomValidity('');
+  }
+}
+
+function normalizeMilitaryTime(value) {
+  const digits = String(value || '').replace(/[^\d]/g, '').slice(0, 4);
+  if (digits.length === 4) return digits.slice(0, 2) + ':' + digits.slice(2);
+  return value || '';
+}
+
 function nowTime() {
-  return new Date().toTimeString().slice(0,5);
+  const now = new Date();
+  return String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
 }
 
 function fillTeams() {
@@ -868,7 +927,7 @@ function addDispatch() {
     caseNumber: document.getElementById('caseNumber').value.trim(),
     team: selectedTeams,
     status: document.getElementById('status').value,
-    dispatchTime: document.getElementById('dispatchTime').value,
+    dispatchTime: normalizeMilitaryTime(document.getElementById('dispatchTime').value),
     priority: document.getElementById('priority').value,
     createdAt: new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', hour12:false}),
     onScene: '',
@@ -975,27 +1034,31 @@ function renderDispatch() {
   `).join('');
 
   document.getElementById('dispatchTable').innerHTML = `
-    <tr>
-      <th>Case</th>
-      <th>Venue</th>
-      <th>Team(s)</th>
-      <th>Priority</th>
-      <th>Status</th>
-      <th>Dispatch</th>
-      <th>Enroute</th>
-      <th>On Scene</th>
-      <th>Tx Init.</th>
-      <th>Clear</th>
-      <th>Location</th>
-      <th>Description</th>
-      <th>Transport</th>
-      <th>Hospital</th>
-      <th>Transport Unit / Agency</th>
-      <th>Transport Time</th>
-      <th>Transport Notes</th>
-      <th class="no-print">Actions</th>
-    </tr>
-    ${rows || '<tr><td colspan="18">No dispatch calls match the current filters.</td></tr>'}
+    <thead>
+      <tr>
+        <th>Case</th>
+        <th>Venue</th>
+        <th>Team(s)</th>
+        <th>Priority</th>
+        <th>Status</th>
+        <th>Dispatch</th>
+        <th>Enroute</th>
+        <th>On Scene</th>
+        <th>Tx Init.</th>
+        <th>Clear</th>
+        <th>Location</th>
+        <th>Description</th>
+        <th>Transport</th>
+        <th>Hospital</th>
+        <th>Transport Unit / Agency</th>
+        <th>Transport Time</th>
+        <th>Transport Notes</th>
+        <th class="no-print">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows || '<tr><td colspan="18">No dispatch calls match the current filters.</td></tr>'}
+    </tbody>
   `;
 }
 
@@ -1062,7 +1125,7 @@ function updateTransport() {
   call.transported = document.getElementById('transported').value;
   call.hospitalDestination = document.getElementById('hospitalDestination').value.trim();
   call.transportAgency = document.getElementById('transportAgency').value.trim();
-  call.transportTime = document.getElementById('transportTime').value;
+  call.transportTime = normalizeMilitaryTime(document.getElementById('transportTime').value);
   call.transportNotes = document.getElementById('transportNotes').value.trim();
 
   ['hospitalDestination','transportAgency','transportTime','transportNotes'].forEach(id => {
@@ -1233,7 +1296,7 @@ function applyNightMode() {
 }
 
 function saveEventStartTime() {
-  data.settings.eventStartTime = document.getElementById('eventStartTime').value;
+  data.settings.eventStartTime = normalizeMilitaryTime(document.getElementById('eventStartTime').value);
   save();
 }
 
@@ -1272,8 +1335,8 @@ function addStaff() {
     name: document.getElementById('staffName').value.trim(),
     role: document.getElementById('staffRole').value,
     assignment: document.getElementById('staffAssignment').value.trim(),
-    start: document.getElementById('staffStart').value,
-    end: document.getElementById('staffEnd').value,
+    start: normalizeMilitaryTime(document.getElementById('staffStart').value),
+    end: normalizeMilitaryTime(document.getElementById('staffEnd').value),
     radio: document.getElementById('staffRadio').value.trim(),
     notes: document.getElementById('staffNotes').value.trim()
   };
@@ -1402,6 +1465,36 @@ input[type="time"] {
 }
 </style>
 
+
+<style>
+#dispatchTable {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+#dispatchTable thead th {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 20 !important;
+  background: #111111 !important;
+  color: #ffffff !important;
+}
+
+#dispatchTable tbody td {
+  background: inherit;
+  position: relative;
+  z-index: 1;
+}
+</style>
+
+
+<style>
+#dispatchTime, #transportTime, #eventStartTime, #staffStart, #staffEnd {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+</style>
+
 </head>
       <body>
         <h1>University of Utah EMS Dispatch Log</h1>
@@ -1429,7 +1522,7 @@ function renderAll() {
   fillTeams();
   applyNightMode();
   const eventStart = document.getElementById('eventStartTime');
-  if (eventStart) eventStart.value = data.settings.eventStartTime || '';
+  if (eventStart) eventStart.value = normalizeMilitaryTime(data.settings.eventStartTime || '');
   renderDispatch();
   renderTeams();
   renderStaffing();
