@@ -492,6 +492,77 @@ body.night-mode #teamTable td {
 }
 </style>
 
+
+<style>
+.rotation-model-table {
+  width: 100%;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  margin-bottom: 28px;
+  min-width: 720px;
+  font-size: 1rem;
+}
+
+.rotation-model-table th,
+.rotation-model-table td {
+  border: 2px solid #111111 !important;
+  padding: 6px 8px !important;
+  text-align: left;
+  background: #ffffff;
+  color: #111111;
+}
+
+.rotation-model-table .rotation-title th {
+  background: #c00000 !important;
+  color: #ffffff !important;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.25rem;
+  text-align: center;
+  font-weight: 900;
+  padding: 5px !important;
+}
+
+.rotation-model-table .rotation-header th {
+  background: #ffffff !important;
+  color: #111111 !important;
+  font-weight: 500;
+  position: static !important;
+}
+
+.rotation-model-table .highlight td:not(:first-child) {
+  background: #ffff00 !important;
+}
+
+body.night-mode .rotation-model-table th,
+body.night-mode .rotation-model-table td {
+  background: #ffffff !important;
+  color: #111111 !important;
+}
+
+body.night-mode .rotation-model-table .rotation-title th {
+  background: #c00000 !important;
+  color: #ffffff !important;
+}
+</style>
+
+
+<style>
+#importantNumbersTable {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  width: 100%;
+}
+
+#importantNumbersTable thead th {
+  background: #111111 !important;
+  color: #ffffff !important;
+}
+
+body.night-mode #importantNumbersTable td {
+  color: #f5f5f5;
+}
+</style>
+
 </head>
 
 <body>
@@ -501,7 +572,7 @@ body.night-mode #teamTable td {
   <nav>
     <button class="active" onclick="showTab('dispatch', this)">Dispatch</button>
     <button onclick="showTab('teams', this)">Team Assignments</button>
-    <button onclick="showTab('staffing', this)">Shift Staffing</button>
+    <button onclick="showTab('importantNumbers', this)">Important Numbers</button>
     <button onclick="showTab('announcements', this)">Announcements</button>
     <button onclick="showTab('inventory', this)">Inventory</button>
     <button onclick="showTab('backup', this)">Backup / Export</button>
@@ -612,11 +683,12 @@ body.night-mode #teamTable td {
 
       <div class="card">
         <h2>Smart Web Paging Template</h2>
-        <textarea id="pagingTemplate">CASE:
-VENUE:
-TEAM(S):
-LOCATION:
-NOTES:</textarea>
+        <textarea id="pagingTemplate">EVENT MEDICAL RESPONSE
+TEAM:
+LEVEL:
+PORTAL:
+DETAILS:
+CASE:</textarea>
         <button class="btn" style="margin-top:10px;" onclick="copyPagingMessage()">Copy Paging Message</button>
       </div>
     </div>
@@ -805,6 +877,18 @@ NOTES:</textarea>
       </div>
     </div>
 
+
+    <div class="card no-print">
+      <h2>Rotation Paging Template</h2>
+      <textarea id="rotationPagingTemplate" rows="7" style="width:100%; padding:10px;">EVENT MEDICAL SERVICES
+NEXT ROTATION:
+TEAM 1:
+TEAM 2:
+TEAM 3:
+TEAM 4:</textarea>
+      <button class="btn" style="margin-top:10px;" onclick="copyRotationPagingMessage()">Copy Rotation Message</button>
+    </div>
+
     <div class="card">
       <h2>Rotation Models</h2>
       <div id="rotations"></div>
@@ -812,37 +896,50 @@ NOTES:</textarea>
   </section>
 
 
-  <section id="staffing" class="tab hidden">
-    <div class="card no-print">
-      <h2>Shift Staffing Board</h2>
-      <div class="form-grid">
-        <div><label>Name</label><input id="staffName" placeholder="Medic / EMT name"></div>
-        <div>
-          <label>Role</label>
-          <select id="staffRole">
-            <option>EMS Supervisor</option>
-            <option>Dispatch</option>
-            <option>Team Member</option>
-            <option>Rover</option>
-            <option>Player Response</option>
-            <option>First Aid</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div><label>Assignment</label><input id="staffAssignment" placeholder="Team 1, Rover 2, First Aid, etc."></div>
-        <div><label>Start (24h)</label><input id="staffStart" type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" oninput="formatMilitaryTimeInput(this)"></div>
-        <div><label>End (24h)</label><input id="staffEnd" type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" oninput="formatMilitaryTimeInput(this)"></div>
-        <div><label>Radio / Call Sign</label><input id="staffRadio" placeholder="EMS, Medical, Team 1"></div>
-        <div class="wide"><label>Notes</label><input id="staffNotes" placeholder="Optional non-PHI note"></div>
-        <div><button class="btn" onclick="addStaff()">Add Staff</button></div>
+  <section id="importantNumbers" class="tab hidden">
+    <div class="card">
+      <h2>University of Utah Event Medical Services Contacts</h2>
+
+      <div class="table-wrap">
+        <table id="importantNumbersTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Position</th>
+              <th>Phone Number</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+
+          
+<tbody>
+            <tr>
+              <td>Nathan Roll</td>
+              <td>Head Manager</td>
+              <td>801-860-3494</td>
+              <td>Nathan.Roll@hsc.utah.edu</td>
+            </tr>
+
+            <tr>
+              <td>Laura Johnson</td>
+              <td>Administrative Assistant</td>
+              <td>435-640-7198</td>
+              <td>laura.a.johnson@utah.edu</td>
+            </tr>
+
+            <tr>
+              <td>Dr. Chris Ryba</td>
+              <td>Medical Director</td>
+              <td>801-800-8000</td>
+              <td>Chris.Ryba@hsc.utah.edu</td>
+            </tr>
+          </tbody>
+
+        </table>
       </div>
     </div>
-
-    <div class="card">
-      <h2>Current Shift Staffing</h2>
-      <div id="staffingBoard" class="staffing-grid"></div>
-    </div>
   </section>
+
 
   <section id="announcements" class="tab hidden">
     <div id="announcementCards" class="grid-two"></div>
@@ -896,27 +993,47 @@ const defaultData = {
     {item:'AED', qty:'Ready'},
     {item:'Oxygen', qty:'Check level'}
   ],
-  staffing: [],
   settings: { activeOnly: false, nightMode: false, eventStartTime: '' }
 };
 
-const rotationModels = {
-  'Delta 1700 Call Time': [
-    ['1700', 'Staff arrival', 'Bag checks', 'Briefing prep', 'Supervisor tasks'],
-    ['1715', 'Training', 'Assignments', 'Radio checks', 'Dispatch setup'],
-    ['1800', 'Rotation 1 starts', 'Teams posted', 'Rovers active', 'Supervisor clear']
-  ],
-  'Maverick / Grizzlies 1730 Call Time': [
-    ['1630', 'Supervisor arrival', 'Venue coordination', 'Command check', 'Prep'],
-    ['1730', 'Staff arrival', 'Bag checks', 'Briefing', 'Radio check'],
-    ['1800', 'Rotation 1 starts', 'Teams posted', 'Rovers active', 'Supervisor clear']
-  ],
-  'Concert / Event Model': [
-    ['Pre-event', 'Supervisor meeting', 'Staff arrival', 'Equipment check', 'Venue briefing'],
-    ['Doors', 'Teams posted', 'Dispatch monitoring', 'Rovers active', 'First aid ready'],
-    ['Post-event', 'Egress coverage', 'Final calls', 'Equipment return', 'Clear']
-  ]
-};
+const rotationModels = [
+  {
+    title: 'Concert setup 1700 call time model',
+    columns: ['Rotations', 'Level 5', 'Level 3', 'First Aid', 'Stage'],
+    
+    rows: [
+      ['1830-1915', '4', '3', '2', '1'],
+      ['1915-2000', '3', '2', '1', '4'],
+      ['2000-2045', '2', '1', '4', '3'],
+      ['2045-2130', '1', '2', '3', '4'],
+      ['2130-2215', '4', '3', '2', '1'],
+      ['2215-Close', '3', '2', '1', '4']
+    ]
+  },
+  {
+    title: 'Jazz Game setup 1900 tip off model',
+    columns: ['Rotations', 'Upper Bowl', 'Lower Bowl', 'First Aid'],
+    rows: [
+      ['1815-1900', '1', '2', '3'],
+      ['Quarter 1', '3', '1', '2'],
+      ['Quarter 2', '2', '3', '1'],
+      ['Quarter 3', '1', '2', '3'],
+      ['Quarter 4', '3', '1', '2']
+    ]
+  },
+  {
+    title: 'Utah Hockey Club setup 1900 puck drop model',
+    columns: ['Rotations', 'Upper Bowl', 'Lower Bowl', 'First Aid'],
+    rows: [
+      ['1800-1845', '1', '2', '3'],
+      ['1845-1930', '3', '1', '2'],
+      ['1930-2015', '2', '3', '1'],
+      ['2015-2100', '1', '2', '3'],
+      ['2100-2145', '3', '1', '2'],
+      ['2145-2230', '2', '3', '1']
+    ]
+  }
+];
 
 const announcements = {
   'Delta Dispatch Announcements': [
@@ -947,7 +1064,6 @@ let data = JSON.parse(localStorage.getItem('emsDispatchData') || 'null') || defa
 data.dispatches = data.dispatches || [];
 data.teams = data.teams || [];
 data.inventory = data.inventory || [];
-data.staffing = data.staffing || [];
 data.settings = data.settings || { activeOnly: false, nightMode: false, eventStartTime: '' };
 if (data.settings.activeOnly === undefined) data.settings.activeOnly = false;
 if (data.settings.nightMode === undefined) data.settings.nightMode = false;
@@ -1313,21 +1429,23 @@ function renderTeams() {
     </tbody>
   `;
 
-  document.getElementById('rotations').innerHTML = Object.entries(rotationModels).map(([title, rows]) => `
-    <h3>${escapeHtml(title)}</h3>
+  document.getElementById('rotations').innerHTML = rotationModels.map(model => `
     <div class="table-wrap">
-      <table>
+      <table class="rotation-model-table">
         <thead>
-          <tr>
-            <th>Time</th>
-            <th>Post 1</th>
-            <th>Post 2</th>
-            <th>Post 3</th>
-            <th>Post 4</th>
+          <tr class="rotation-title">
+            <th colspan="${model.columns.length}">${escapeHtml(model.title)}</th>
+          </tr>
+          <tr class="rotation-header">
+            ${model.columns.map(col => `<th>${escapeHtml(col)}</th>`).join('')}
           </tr>
         </thead>
         <tbody>
-          ${rows.map(row => `<tr>${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}
+          ${model.rows.map(row => `
+            <tr class="${model.highlight && row[0] === model.highlight ? 'highlight' : ''}">
+              ${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}
+            </tr>
+          `).join('')}
         </tbody>
       </table>
     </div>
@@ -1472,59 +1590,6 @@ function updateClockAndTimer() {
   const secs = diff % 60;
 
   eventTimer.textContent = `${sign}${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-}
-
-function addStaff() {
-  const staff = {
-    id: makeId(),
-    name: document.getElementById('staffName').value.trim(),
-    role: document.getElementById('staffRole').value,
-    assignment: document.getElementById('staffAssignment').value.trim(),
-    start: normalizeMilitaryTime(document.getElementById('staffStart').value),
-    end: normalizeMilitaryTime(document.getElementById('staffEnd').value),
-    radio: document.getElementById('staffRadio').value.trim(),
-    notes: document.getElementById('staffNotes').value.trim()
-  };
-
-  if (!staff.name) {
-    alert('Enter a staff member name first.');
-    return;
-  }
-
-  data.staffing.push(staff);
-  ['staffName','staffAssignment','staffStart','staffEnd','staffRadio','staffNotes'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-
-  save();
-}
-
-function deleteStaff(id) {
-  data.staffing = data.staffing.filter(s => s.id !== id);
-  save();
-}
-
-function renderStaffing() {
-  const board = document.getElementById('staffingBoard');
-  if (!board) return;
-
-  if (!data.staffing.length) {
-    board.innerHTML = '<p>No staff added yet.</p>';
-    return;
-  }
-
-  board.innerHTML = data.staffing.map(s => `
-    <div class="staff-card">
-      <div class="staff-role">${escapeHtml(s.role)}</div>
-      <h3>${escapeHtml(s.name)}</h3>
-      <p><strong>Assignment:</strong> ${escapeHtml(s.assignment || '')}</p>
-      <p><strong>Shift:</strong> ${escapeHtml(s.start || '')} ${s.end ? '– ' + escapeHtml(s.end) : ''}</p>
-      <p><strong>Radio:</strong> ${escapeHtml(s.radio || '')}</p>
-      <p>${escapeHtml(s.notes || '')}</p>
-      <button class="btn small danger no-print" onclick="deleteStaff('${s.id}')">Remove</button>
-    </div>
-  `).join('');
 }
 
 function getFilteredDispatchesForExport() {
@@ -1687,6 +1752,77 @@ body.night-mode #teamTable td {
 }
 </style>
 
+
+<style>
+.rotation-model-table {
+  width: 100%;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  margin-bottom: 28px;
+  min-width: 720px;
+  font-size: 1rem;
+}
+
+.rotation-model-table th,
+.rotation-model-table td {
+  border: 2px solid #111111 !important;
+  padding: 6px 8px !important;
+  text-align: left;
+  background: #ffffff;
+  color: #111111;
+}
+
+.rotation-model-table .rotation-title th {
+  background: #c00000 !important;
+  color: #ffffff !important;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.25rem;
+  text-align: center;
+  font-weight: 900;
+  padding: 5px !important;
+}
+
+.rotation-model-table .rotation-header th {
+  background: #ffffff !important;
+  color: #111111 !important;
+  font-weight: 500;
+  position: static !important;
+}
+
+.rotation-model-table .highlight td:not(:first-child) {
+  background: #ffff00 !important;
+}
+
+body.night-mode .rotation-model-table th,
+body.night-mode .rotation-model-table td {
+  background: #ffffff !important;
+  color: #111111 !important;
+}
+
+body.night-mode .rotation-model-table .rotation-title th {
+  background: #c00000 !important;
+  color: #ffffff !important;
+}
+</style>
+
+
+<style>
+#importantNumbersTable {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  width: 100%;
+}
+
+#importantNumbersTable thead th {
+  background: #111111 !important;
+  color: #ffffff !important;
+}
+
+body.night-mode #importantNumbersTable td {
+  color: #f5f5f5;
+}
+</style>
+
 </head>
       <body>
         <h1>University of Utah EMS Dispatch Log</h1>
@@ -1710,6 +1846,16 @@ function csvEscape(value) {
 }
 
 
+
+function copyRotationPagingMessage() {
+  const text = document.getElementById('rotationPagingTemplate').value;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Rotation message copied.');
+  }).catch(() => {
+    alert('Copy failed. You can manually highlight and copy the template.');
+  });
+}
+
 function renderAll() {
   fillTeams();
   applyNightMode();
@@ -1717,7 +1863,6 @@ function renderAll() {
   if (eventStart) eventStart.value = normalizeMilitaryTime(data.settings.eventStartTime || '');
   renderDispatch();
   renderTeams();
-  renderStaffing();
   renderAnnouncements();
   renderInventory();
   populateTransportCases();
