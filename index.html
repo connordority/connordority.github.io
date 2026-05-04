@@ -462,6 +462,36 @@ body.night-mode #teamTable td {
 }
 </style>
 
+
+<style>
+/* Fix Team Assignments tab table headers */
+#teamTable,
+#rotations table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+#teamTable thead th,
+#rotations table thead th {
+  background: #111111 !important;
+  color: #ffffff !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+}
+
+#teamTable tbody td,
+#rotations table tbody td {
+  background: inherit;
+  position: relative;
+  z-index: 1;
+}
+
+#teams th {
+  top: 0 !important;
+}
+</style>
+
 </head>
 
 <body>
@@ -1287,8 +1317,18 @@ function renderTeams() {
     <h3>${escapeHtml(title)}</h3>
     <div class="table-wrap">
       <table>
-        <tr><th>Time</th><th>Post 1</th><th>Post 2</th><th>Post 3</th><th>Post 4</th></tr>
-        ${rows.map(row => `<tr>${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Post 1</th>
+            <th>Post 2</th>
+            <th>Post 3</th>
+            <th>Post 4</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(row => `<tr>${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}
+        </tbody>
       </table>
     </div>
   `).join('');
@@ -1614,6 +1654,36 @@ input[type="time"] {
 
 body.night-mode #teamTable td {
   color: #f5f5f5;
+}
+</style>
+
+
+<style>
+/* Fix Team Assignments tab table headers */
+#teamTable,
+#rotations table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+#teamTable thead th,
+#rotations table thead th {
+  background: #111111 !important;
+  color: #ffffff !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+}
+
+#teamTable tbody td,
+#rotations table tbody td {
+  background: inherit;
+  position: relative;
+  z-index: 1;
+}
+
+#teams th {
+  top: 0 !important;
 }
 </style>
 
