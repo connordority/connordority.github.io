@@ -645,7 +645,7 @@ body.night-mode #importantNumbersTable td {
       </div>
       <div class="clock-box">
         <label>Event Start Time (24h)</label>
-        <input id="eventStartTime" type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" oninput="formatMilitaryTimeInput(this)">
+        <input id="eventStartTime" type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" oninput="formatMilitaryTimeInput(this); saveEventStartTime();" onchange="saveEventStartTime(); updateClockAndTimer();">
         <small>Used for the live event timer.</small>
       </div>
       <div class="clock-box">
@@ -1616,37 +1616,67 @@ function applyNightMode() {
 }
 
 function saveEventStartTime() {
-  data.settings.eventStartTime = normalizeMilitaryTime(document.getElementById('eventStartTime').value);
-  save();
+  const field = document.getElementById('eventStartTime');
+  if (!field) return;
+
+  const value = normalizeMilitaryTime(field.value);
+  field.value = value;
+
+  if (value.length === 5) {
+    const [hh, mm] = value.split(':').map(Number);
+    if (hh > 23 || mm > 59) return;
+  }
+
+  data.settings.eventStartTime = value;
+  localStorage.setItem('emsDispatchData', JSON.stringify(data));
+  updateClockAndTimer();
 }
 
 function updateClockAndTimer() {
   const now = new Date();
+
   const clock = document.getElementById('liveClock');
-  if (clock) clock.textContent = now.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+  if (clock) {
+    clock.textContent =
+      String(now.getHours()).padStart(2, '0') + ':' +
+      String(now.getMinutes()).padStart(2, '0') + ':' +
+      String(now.getSeconds()).padStart(2, '0');
+  }
 
   const eventTimer = document.getElementById('eventTimer');
   if (!eventTimer) return;
 
-  const startTime = data.settings.eventStartTime;
-  if (!startTime) {
+  const field = document.getElementById('eventStartTime');
+  const startTime = normalizeMilitaryTime((field && field.value) || data.settings.eventStartTime || '');
+
+  if (!startTime || startTime.length !== 5 || !startTime.includes(':')) {
     eventTimer.textContent = 'Not started';
     return;
   }
 
   const [h, m] = startTime.split(':').map(Number);
+
+  if (Number.isNaN(h) || Number.isNaN(m) || h > 23 || m > 59) {
+    eventTimer.textContent = 'Invalid time';
+    return;
+  }
+
   const start = new Date();
   start.setHours(h, m, 0, 0);
 
   let diff = Math.floor((now - start) / 1000);
-  const sign = diff < 0 ? '-' : '';
+  const prefix = diff < 0 ? '-' : '';
   diff = Math.abs(diff);
 
   const hours = Math.floor(diff / 3600);
   const mins = Math.floor((diff % 3600) / 60);
   const secs = diff % 60;
 
-  eventTimer.textContent = `${sign}${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+  eventTimer.textContent =
+    prefix +
+    String(hours).padStart(2, '0') + ':' +
+    String(mins).padStart(2, '0') + ':' +
+    String(secs).padStart(2, '0');
 }
 
 function getFilteredDispatchesForExport() {
