@@ -445,6 +445,23 @@ input[type="time"] {
 }
 </style>
 
+
+<style>
+#teamTable {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+#teamTable thead th {
+  background: #111111 !important;
+  color: #ffffff !important;
+}
+
+body.night-mode #teamTable td {
+  color: #f5f5f5;
+}
+</style>
+
 </head>
 
 <body>
@@ -496,12 +513,17 @@ input[type="time"] {
         <div class="form-grid">
           <div>
             <label>Venue</label>
-            <select id="venue">
+            
+<select id="venue">
               <option>Delta Center</option>
-              <option>Maverick Center</option>
-              <option>Rice-Eccles Stadium</option>
+              <option>Maverik Center</option>
+              <option>Ball Park at AFS</option>
+              <option>LDS Conference Center</option>
+              <option>LDS Temple Square</option>
+              <option>Mammoth Ice Center</option>
               <option>Other</option>
             </select>
+
           </div>
 
           <div>
@@ -663,22 +685,86 @@ NOTES:</textarea>
     <div class="grid-two">
       <div class="card no-print">
         <h2>Team Assignments</h2>
+        <p style="margin-top:-6px;">Select a team, add assigned personnel, then post it to Current Teams.</p>
+
         <div class="form-grid">
           <div>
             <label>Venue</label>
             <select id="teamVenue">
               <option>Delta Center</option>
-              <option>Maverick Center</option>
-              <option>Rice-Eccles Stadium</option>
+              <option>Maverik Center</option>
+              <option>Ball Park at AFS</option>
+              <option>LDS Conference Center</option>
+              <option>LDS Temple Square</option>
+              <option>Mammoth Ice Center</option>
               <option>Other</option>
             </select>
           </div>
-          <div><label>Team</label><input id="teamName" placeholder="Team 1"></div>
-          <div><label>EMT / Medic 1</label><input id="emt1" placeholder="Name"></div>
-          <div><label>EMT / Medic 2</label><input id="emt2" placeholder="Name"></div>
-          <div class="wide"><label>Orientee / Role</label><input id="orientee" placeholder="Orientee, Rover, Player Response, etc."></div>
-          <div><button class="btn" onclick="addTeam()">Add / Update Team</button></div>
+
+          <div>
+            <label>Team</label>
+            <select id="teamName">
+              <option>Team 1</option>
+              <option>Team 2</option>
+              <option>Team 3</option>
+              <option>Team 4</option>
+              <option>Team 5</option>
+              <option>Team 6</option>
+              <option>Team 7</option>
+              <option>Team 8</option>
+              <option>Team 9</option>
+              <option>Rover 1</option>
+              <option>Rover 2</option>
+              <option>Player Response</option>
+              <option>Medic 1</option>
+              <option>Supervisor</option>
+              <option>Dispatch</option>
+              <option>First Aid</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Assignment / Post</label>
+            <input id="teamPost" placeholder="Portal, section, first aid, rover zone, etc.">
+          </div>
+
+          <div>
+            <label>Medic / EMT 1</label>
+            <input id="emt1" placeholder="Name">
+          </div>
+
+          <div>
+            <label>Medic / EMT 2</label>
+            <input id="emt2" placeholder="Name">
+          </div>
+
+          <div>
+            <label>Medic / EMT 3</label>
+            <input id="emt3" placeholder="Optional">
+          </div>
+
+          <div>
+            <label>Radio / Call Sign</label>
+            <input id="teamRadio" placeholder="Team 1, Rover 1, Medical, etc.">
+          </div>
+
+          <div>
+            <label>Status</label>
+            <select id="teamStatus">
+              <option>Assigned</option>
+              <option>Staged</option>
+              <option>Posted</option>
+              <option>On Break</option>
+              <option>Clear</option>
+            </select>
+          </div>
+
+          <div>
+            <button class="btn" onclick="addTeam()">Add / Update Team</button>
+          </div>
         </div>
+      </div>
       </div>
 
       <div class="card">
@@ -692,13 +778,6 @@ NOTES:</textarea>
     <div class="card">
       <h2>Rotation Models</h2>
       <div id="rotations"></div>
-    </div>
-
-    <div class="card">
-      <h2>Call Signs</h2>
-      <div class="table-wrap">
-        <table id="callSigns"></table>
-      </div>
     </div>
   </section>
 
@@ -778,9 +857,9 @@ NOTES:</textarea>
 const defaultData = {
   dispatches: [],
   teams: [
-    {venue:'Delta Center', team:'Team 1', emt1:'', emt2:'', orientee:''},
-    {venue:'Delta Center', team:'Team 2', emt1:'', emt2:'', orientee:''},
-    {venue:'Maverick Center', team:'Team 1', emt1:'', emt2:'', orientee:''}
+    {venue:'Delta Center', team:'Team 1', post:'', emt1:'', emt2:'', emt3:'', radio:'', status:'Assigned'},
+    {venue:'Delta Center', team:'Team 2', post:'', emt1:'', emt2:'', emt3:'', radio:'', status:'Assigned'},
+    {venue:'Maverik Center', team:'Team 1', post:'', emt1:'', emt2:'', emt3:'', radio:'', status:'Assigned'}
   ],
   inventory: [
     {item:'Trauma Bag', qty:'Ready'},
@@ -832,13 +911,7 @@ const announcements = {
   ]
 };
 
-const callSignsData = [
-  ['Department', 'Channel', 'Call Sign'],
-  ['UHealth EMS Radio', 'T3', 'EMS'],
-  ['Venue Command Center', '7 MAV / Venue Channel', 'VCC'],
-  ['EMS Supervisor to Venue', 'Venue Channel', 'MEDICAL'],
-  ['Fire / Outside Agency', 'Venue Channel', 'FIRE']
-];
+
 
 let data = JSON.parse(localStorage.getItem('emsDispatchData') || 'null') || defaultData;
 data.dispatches = data.dispatches || [];
@@ -1147,39 +1220,67 @@ function copyPagingMessage() {
 function addTeam() {
   const team = {
     venue: document.getElementById('teamVenue').value,
-    team: document.getElementById('teamName').value.trim(),
+    team: document.getElementById('teamName').value,
+    post: document.getElementById('teamPost').value.trim(),
     emt1: document.getElementById('emt1').value.trim(),
     emt2: document.getElementById('emt2').value.trim(),
-    orientee: document.getElementById('orientee').value.trim()
+    emt3: document.getElementById('emt3').value.trim(),
+    radio: document.getElementById('teamRadio').value.trim(),
+    status: document.getElementById('teamStatus').value
   };
 
-  if (!team.team) {
-    alert('Enter a team name first.');
-    return;
+  const existingIndex = data.teams.findIndex(t =>
+    t.venue === team.venue &&
+    String(t.team).toLowerCase() === String(team.team).toLowerCase()
+  );
+
+  if (existingIndex >= 0) {
+    data.teams[existingIndex] = { ...data.teams[existingIndex], ...team };
+  } else {
+    data.teams.push(team);
   }
 
-  const existingIndex = data.teams.findIndex(t => t.venue === team.venue && t.team.toLowerCase() === team.team.toLowerCase());
-
-  if (existingIndex >= 0) data.teams[existingIndex] = team;
-  else data.teams.push(team);
-
-  ['teamName','emt1','emt2','orientee'].forEach(id => document.getElementById(id).value = '');
+  ['teamPost','emt1','emt2','emt3','teamRadio'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
 
   save();
 }
-
 function renderTeams() {
+  const teamRows = data.teams.map((t, idx) => `
+    <tr>
+      <td>${escapeHtml(t.venue || '')}</td>
+      <td><strong>${escapeHtml(t.team || '')}</strong></td>
+      <td>${escapeHtml(t.post || '')}</td>
+      <td>${escapeHtml(t.emt1 || '')}</td>
+      <td>${escapeHtml(t.emt2 || '')}</td>
+      <td>${escapeHtml(t.emt3 || '')}</td>
+      <td>${escapeHtml(t.radio || '')}</td>
+      <td><span class="status ${escapeHtml(t.status || 'Assigned')}">${escapeHtml(t.status || 'Assigned')}</span></td>
+      <td class="no-print">
+        <button type="button" class="btn small danger" onclick="deleteTeam(${idx})">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+
   document.getElementById('teamTable').innerHTML = `
-    <tr><th>Venue</th><th>Team</th><th>EMT / Medic 1</th><th>EMT / Medic 2</th><th>Orientee / Role</th></tr>
-    ${data.teams.map(t => `
+    <thead>
       <tr>
-        <td>${escapeHtml(t.venue || '')}</td>
-        <td>${escapeHtml(t.team || '')}</td>
-        <td>${escapeHtml(t.emt1 || '')}</td>
-        <td>${escapeHtml(t.emt2 || '')}</td>
-        <td>${escapeHtml(t.orientee || '')}</td>
+        <th>Venue</th>
+        <th>Team</th>
+        <th>Assignment / Post</th>
+        <th>Medic / EMT 1</th>
+        <th>Medic / EMT 2</th>
+        <th>Medic / EMT 3</th>
+        <th>Radio / Call Sign</th>
+        <th>Status</th>
+        <th class="no-print">Action</th>
       </tr>
-    `).join('')}
+    </thead>
+    <tbody>
+      ${teamRows || '<tr><td colspan="9">No team assignments yet.</td></tr>'}
+    </tbody>
   `;
 
   document.getElementById('rotations').innerHTML = Object.entries(rotationModels).map(([title, rows]) => `
@@ -1191,12 +1292,16 @@ function renderTeams() {
       </table>
     </div>
   `).join('');
-
-  document.getElementById('callSigns').innerHTML = callSignsData.map((row, i) => `
-    <tr>${row.map(cell => i === 0 ? `<th>${escapeHtml(cell)}</th>` : `<td>${escapeHtml(cell)}</td>`).join('')}</tr>
-  `).join('');
 }
 
+function deleteTeam(index) {
+  if (index === undefined || index === null || index < 0 || index >= data.teams.length) return;
+  const team = data.teams[index];
+  const label = `${team.team || 'this team'} at ${team.venue || 'this venue'}`;
+  if (!confirm(`Delete ${label}?`)) return;
+  data.teams.splice(index, 1);
+  save();
+}
 function renderAnnouncements() {
   document.getElementById('announcementCards').innerHTML = Object.entries(announcements).map(([title, items]) => `
     <div class="card">
@@ -1492,6 +1597,23 @@ input[type="time"] {
 #dispatchTime, #transportTime, #eventStartTime, #staffStart, #staffEnd {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.06em;
+}
+</style>
+
+
+<style>
+#teamTable {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+#teamTable thead th {
+  background: #111111 !important;
+  color: #ffffff !important;
+}
+
+body.night-mode #teamTable td {
+  color: #f5f5f5;
 }
 </style>
 
