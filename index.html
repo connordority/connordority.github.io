@@ -586,6 +586,29 @@ body.night-mode #importantNumbersTable td {
 }
 </style>
 
+
+<style>
+#inventoryTable {
+  width: 100%;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+#inventoryTable thead th {
+  background: #111111 !important;
+  color: #ffffff !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+}
+
+#inventoryTable tbody td {
+  background: inherit;
+  position: relative;
+  z-index: 1;
+}
+</style>
+
 </head>
 
 <body>
@@ -1516,14 +1539,25 @@ function addInventory() {
 
 function renderInventory() {
   document.getElementById('inventoryTable').innerHTML = `
-    <tr><th>Item</th><th>Quantity / Status</th><th class="no-print">Action</th></tr>
-    ${data.inventory.map((item, idx) => `
+    <thead>
       <tr>
-        <td>${escapeHtml(item.item || '')}</td>
-        <td>${escapeHtml(item.qty || '')}</td>
-        <td class="no-print"><button class="btn small danger" onclick="deleteInventory(${idx})">Delete</button></td>
+        <th>Item</th>
+        <th>Quantity / Status</th>
+        <th class="no-print">Action</th>
       </tr>
-    `).join('') || '<tr><td colspan="3">No inventory items yet.</td></tr>'}
+    </thead>
+
+    <tbody>
+      ${data.inventory.map((item, idx) => `
+        <tr>
+          <td>${escapeHtml(item.item || '')}</td>
+          <td>${escapeHtml(item.qty || '')}</td>
+          <td class="no-print">
+            <button class="btn small danger" onclick="deleteInventory(${idx})">Delete</button>
+          </td>
+        </tr>
+      `).join('') || '<tr><td colspan="3">No inventory items yet.</td></tr>'}
+    </tbody>
   `;
 }
 
@@ -1863,6 +1897,29 @@ body.night-mode #importantNumbersTable td {
 }
 
 #importantNumbersTable tbody td {
+  background: inherit;
+  position: relative;
+  z-index: 1;
+}
+</style>
+
+
+<style>
+#inventoryTable {
+  width: 100%;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+#inventoryTable thead th {
+  background: #111111 !important;
+  color: #ffffff !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+}
+
+#inventoryTable tbody td {
   background: inherit;
   position: relative;
   z-index: 1;
